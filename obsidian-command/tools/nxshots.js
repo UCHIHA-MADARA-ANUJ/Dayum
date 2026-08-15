@@ -15,7 +15,7 @@ const IDX = { command: 0, tracker: 1, dossiers: 2, intel: 3, ops: 4, interdictio
   page.on('pageerror', e => errs.push(String(e).slice(0, 150)));
   await page.setViewport({ width: 1440, height: 900, deviceScaleFactor: 1 });
 
-  await page.goto('http://localhost:8080/', { waitUntil: 'networkidle0', timeout: 120000 });
+  await page.goto('http://localhost:8080/', { waitUntil: 'domcontentloaded', timeout: 60000 });
   await new Promise(r => setTimeout(r, 2500));
   // gate shot
   await page.screenshot({ path: path.join(OUT, 'shot-gate.png') });

@@ -3,6 +3,7 @@ const nextConfig = {
   reactStrictMode: false,
   images: { unoptimized: true },
   eslint: { ignoreDuringBuilds: true },
+  allowedDevOrigins: ["*"],
 };
 
 export default nextConfig;

@@ -1,13 +1,12 @@
 "use client";
 import { useEffect, useRef, useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import Lenis from "lenis";
 import { Toaster, toast } from "sonner";
 import { Radar, Globe, FileText, Eye, Swords, Megaphone, MessageSquare, Archive, TerminalSquare, ScrollText, BarChart3, Ruler, LogOut, RotateCcw } from "lucide-react";
 import { useObsidian } from "../lib/store";
 import { TARGETS, SECTORS } from "../lib/data";
 import { uid, esc, sigilMark } from "../lib/helpers";
-import { GalaxyCanvas, MatrixRain, CursorFX, Magnetic, Scramble, Shutter, FilmLayer } from "../components/core";
+import { GalaxyCanvas, MatrixRain, CursorFX, Magnetic, Scramble } from "../components/core";
 import { CommandHero, GalaxyTracker, Dossiers, IntelFeed, setIntelEscalate, OpsBoard, setDossierOpener } from "../components/views1";
 import { Interdiction, Comms, Archive as ArchiveView, TerminalView, Manifesto, Metrics, Standards } from "../components/views2";
 import { audio } from "../lib/audio";
@@ -119,16 +118,6 @@ export default function Obsidian() {
 
   const go = useCallback((v) => { audio.click(); audio.sweep(); setView(v); }, [setView]);
 
-  /* lenis smooth scroll on content */
-  useEffect(() => {
-    if (phase !== "app" || !contentRef.current) return;
-    const lenis = new Lenis({ wrapper: contentRef.current, content: contentRef.current, smoothWheel: true, duration: 1.15 });
-    let raf;
-    const loop = (t) => { lenis.raf(t); raf = requestAnimationFrame(loop); };
-    raf = requestAnimationFrame(loop);
-    return () => { cancelAnimationFrame(raf); lenis.destroy(); };
-  }, [phase]);
-
   const VIEWS = {
     command: <CommandHero go={go} />,
     tracker: <GalaxyTracker />,
@@ -149,7 +138,7 @@ export default function Obsidian() {
   return (
     <>
       <GalaxyCanvas />
-      <FilmLayer />
+      <div className="fx-noise" />
       <CursorFX />
       <Toaster theme="dark" position="bottom-right" toastOptions={{ style: { background: "#0b0b12", border: "1px solid #2a2a3e", color: "#e8e4d8", fontFamily: "monospace", fontSize: 11, letterSpacing: ".1em" } }} />
 
@@ -223,14 +212,6 @@ export default function Obsidian() {
       <AnimatePresence>
         {phase === "app" && (
           <motion.div key="app" className="app" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.6 }}>
-            <Shutter trigger={view} />
-            <div className="scanlines" />
-            <div className="crt-vignette" />
-            <div className="hud-corners">
-              <span className="hc hc-tl" /><span className="hc hc-tr" /><span className="hc hc-bl" /><span className="hc hc-br" />
-              <div className="hud-tag hud-tl">OBSIDIAN // SECURE LINK</div>
-              <div className="hud-tag hud-br">OBSIDIAN v1.0.0 · ALPHA-7</div>
-            </div>
 
             <aside className="sidebar">
               <div className="side-brand">
