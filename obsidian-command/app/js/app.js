@@ -83,44 +83,219 @@ function posterSVG(t, {huge=false}={}){
   </svg>`;
 }
 
-/* ── BOOT ────────────────────────────────────────────── */
+/* ── GATE + BOOT SEQUENCE ──────────────────────────── */
+let booted = false;
+
 function initBoot(){
   if (Store.get("session", false)) { enterApp(); return; }
-  const input = $("#bootPass"), status = $("#bootStatus");
+  initGalaxy();
+  const gate = $("#gate");
+  $("#gateBtn").addEventListener("click", startBoot);
+  gate.addEventListener("click", e => { if (e.target.closest(".gate-btn")) return; startBoot(); });
+}
+function startBoot(){
+  if (booted) return; booted = true;
+  const gate = $("#gate");
+  gate.style.transition = "opacity .5s";
+  gate.style.opacity = "0";
+  setTimeout(() => gate.classList.add("hidden"), 520);
+  runBootSequence();
+}
+function runBootSequence(){
+  const boot = $("#boot");
+  boot.classList.remove("hidden");
+  const lines = [
+    { t:"OBSIDIAN CORE v1.0.0 — IMPERIAL SECURITY NETWORK", c:"sys" },
+    { t:"MOUNTING SECTOR MAPS .................... OK", c:"ok" },
+    { t:"DECRYPTING INQUISITOR CHANNELS .......... OK", c:"ok" },
+    { t:"CALIBRATING PROBE NETWORK ................ OK", c:"ok" },
+    { t:"LOADING TARGET DOSSIERS ................. [ 9 ]", c:"warn" },
+    { t:"SYNCING GALACTIC GRID .................. [ 10 ]", c:"warn" },
+    { t:"SECURITY PROTOCOL: ENCRYPTION AES-7 · ZERO-KEY", c:"sys" },
+    { t:"CLEARANCE CHECK REQUIRED — ENTER PASSPHRASE", c:"amber" }
+  ];
+  const log = $("#bootLines");
+  const prog = $("#bootProgBar");
+  let i = 0;
+  function typeNext(){
+    if (i >= lines.length){
+      finishBoot();
+      return;
+    }
+    const ln = lines[i];
+    const div = document.createElement("div");
+    div.className = ln.c;
+    div.innerHTML = '<span class="cursor"></span>';
+    log.appendChild(div);
+    const txt = ln.t; let j = 0;
+    const iv = setInterval(() => {
+      div.textContent = txt.slice(0, j);
+      div.classList.add("cursor");
+      if (j >= txt.length){
+        clearInterval(iv);
+        div.classList.remove("cursor");
+        prog.style.width = (((i + 1) / lines.length) * 100) + "%";
+        i++;
+        setTimeout(typeNext, 130 + Math.random() * 180);
+      } else {
+        j += 2 + Math.floor(Math.random() * 3);
+      }
+    }, 14);
+  }
+  typeNext();
+}
+function finishBoot(){
+  const wrap = $("#bootPassWrap");
+  wrap.classList.remove("hidden");
+  const input = $("#bootPass");
+  input.focus();
   $("#bootGo").addEventListener("click", tryAuth);
   input.addEventListener("keydown", e => { if (e.key === "Enter") tryAuth(); });
   function tryAuth(){
     const v = input.value.trim();
+    const status = $("#bootStatus");
     if (!v){
-      status.textContent = "PASSPHRASE REQUIRED — THIS IS A CLASSIFIED TERMINAL";
+      status.textContent = "PASSPHRASE REQUIRED";
       status.classList.add("err");
       return;
     }
     status.classList.remove("err");
-    status.textContent = "";
+    status.textContent = "VERIFYING CREDENTIALS…";
     $("#bootGo").disabled = true;
-    let i = 0;
-    const msgs = ["CONTACTING IMPERIAL CORE…", "VERIFYING CREDENTIALS…", "CROSS-REFERENCING CLEARANCE…", "AUTHENTICATING OPERATIVE…"];
-    const iv = setInterval(() => {
-      if (i < msgs.length){ status.textContent = msgs[i]; i++; }
-    }, 420);
     setTimeout(() => {
-      clearInterval(iv);
       if (v.toUpperCase() === OBS.passphrase){
-        status.textContent = "CLEARANCE GRANTED — WELCOME, OPERATIVE";
+        status.textContent = "✓ CLEARANCE GRANTED";
         status.style.color = "var(--green)";
         Store.set("session", true);
-        setTimeout(enterApp, 700);
+        setTimeout(enterApp, 650);
       } else {
-        status.textContent = "ACCESS DENIED — INCIDENT LOGGED";
+        status.textContent = "✗ ACCESS DENIED — INCIDENT LOGGED";
         status.classList.add("err");
         const boot = $("#boot");
         boot.classList.add("boot-shake");
         setTimeout(() => boot.classList.remove("boot-shake"), 550);
+        input.value = "";
         $("#bootGo").disabled = false;
       }
-    }, 1750);
+    }, 1400);
   }
+}
+
+/* ── GALACTIC CANVAS (starfield + nebula drift) ──────── */
+let galCtx = null, galStars = [], galShots = [];
+function initGalaxy(){
+  const cv = $("#galaxy");
+  if (!cv) return;
+  galCtx = cv.getContext("2d");
+  let W, H;
+  function resize(){
+    W = cv.width = window.innerWidth;
+    H = cv.height = window.innerHeight;
+    galStars = [];
+    const n = Math.floor((W * H) / 2600);
+    for (let i = 0; i < n; i++){
+      galStars.push({
+        x: Math.random() * W, y: Math.random() * H,
+        r: Math.random() < .88 ? Math.random() * 0.9 + 0.2 : Math.random() * 1.6 + 0.8,
+        tw: Math.random() * Math.PI * 2, ts: 0.4 + Math.random() * 1.4,
+        vx: (Math.random() - .5) * 0.06, vy: (Math.random() - .5) * 0.06,
+        hue: Math.random() < .12 ? "224,30,55" : Math.random() < .2 ? "159,180,216" : "255,255,255"
+      });
+    }
+  }
+  resize();
+  window.addEventListener("resize", resize);
+  function frame(){
+    const ctx = galCtx; if (!ctx) return;
+    ctx.clearRect(0, 0, W, H);
+    // nebula glows
+    const t = Date.now() / 1000;
+    const g1 = ctx.createRadialGradient(W*0.2, H*0.25, 0, W*0.2, H*0.25, W*0.45);
+    g1.addColorStop(0, "rgba(80,10,26,0.10)"); g1.addColorStop(1, "rgba(80,10,26,0)");
+    ctx.fillStyle = g1; ctx.fillRect(0, 0, W, H);
+    const g2 = ctx.createRadialGradient(W*0.85, H*0.75, 0, W*0.85, H*0.75, W*0.4);
+    g2.addColorStop(0, "rgba(20,24,60,0.12)"); g2.addColorStop(1, "rgba(20,24,60,0)");
+    ctx.fillStyle = g2; ctx.fillRect(0, 0, W, H);
+    // stars
+    for (const s of galStars){
+      s.tw += 0.016 * s.ts;
+      const a = 0.3 + 0.7 * Math.abs(Math.sin(s.tw));
+      s.x += s.vx; s.y += s.vy;
+      if (s.x < -4) s.x = W + 4; if (s.x > W + 4) s.x = -4;
+      if (s.y < -4) s.y = H + 4; if (s.y > H + 4) s.y = -4;
+      ctx.beginPath();
+      ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+      ctx.fillStyle = "rgba(" + s.hue + "," + a + ")";
+      ctx.fill();
+    }
+    // occasional shooting star
+    if (Math.random() < 0.004){
+      galShots.push({ x: Math.random() * W * 0.7 + W * 0.2, y: Math.random() * H * 0.3, vx: 9 + Math.random() * 6, vy: 3 + Math.random() * 2, life: 1 });
+    }
+    for (let i = galShots.length - 1; i >= 0; i--){
+      const sh = galShots[i];
+      sh.x += sh.vx; sh.y += sh.vy; sh.life -= 0.02;
+      if (sh.life <= 0){ galShots.splice(i, 1); continue; }
+      const grad = ctx.createLinearGradient(sh.x, sh.y, sh.x - sh.vx * 7, sh.y - sh.vy * 7);
+      grad.addColorStop(0, "rgba(255,255,255," + (0.8 * sh.life) + ")");
+      grad.addColorStop(1, "rgba(255,255,255,0)");
+      ctx.strokeStyle = grad; ctx.lineWidth = 1.4;
+      ctx.beginPath(); ctx.moveTo(sh.x, sh.y); ctx.lineTo(sh.x - sh.vx * 7, sh.y - sh.vy * 7); ctx.stroke();
+    }
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+}
+
+/* ── WELCOME OVERLAY ─────────────────────────────────── */
+function showWelcome(){
+  const w = $("#welcome");
+  w.classList.remove("hidden");
+  $("#welcomeTitle").textContent = "WELCOME, OPERATIVE " + OBS.operative;
+  const subs = ["DECRYPTING INTERFACE…", "LOADING SECTOR GRID…", "CALIBRATING RADAR…"];
+  let i = 0;
+  const iv = setInterval(() => { if (i < subs.length){ $("#welcomeSub").textContent = subs[i]; i++; } }, 700);
+  setTimeout(() => { clearInterval(iv); w.classList.add("hidden"); }, 3400);
+}
+
+/* ── VIEW TRANSITION FX ───────────────────────────────── */
+function sweepFx(){
+  const el = $("#sweep");
+  el.classList.remove("go"); void el.offsetWidth;
+  el.classList.add("go");
+  setTimeout(() => el.classList.remove("go"), 650);
+}
+function glitchTitle(){
+  const t = $("#view .page-title");
+  if (!t) return;
+  const txt = t.textContent.trim();
+  if (!t.classList.contains("glitchy")){
+    t.classList.add("glitchy");
+    t.setAttribute("data-text", txt);
+  }
+  t.classList.remove("go"); void t.offsetWidth;
+  t.classList.add("go");
+  setTimeout(() => t.classList.remove("go"), 600);
+}
+function animateCounters(){
+  $$("#view .stat-value").forEach(el => {
+    const txt = el.textContent.trim();
+    const m = txt.match(/(\d[\d,.]*)/);
+    if (!m) return;
+    const target = parseFloat(m[1].replace(/,/g, ""));
+    const prefix = txt.slice(0, m.index);
+    const suffix = txt.slice(m.index + m[0].length);
+    if (target < 1) return;
+    const dur = 900; const t0 = performance.now();
+    function step(now){
+      const p = Math.min(1, (now - t0) / dur);
+      const eased = 1 - Math.pow(1 - p, 3);
+      const val = Math.round(target * eased);
+      el.textContent = prefix + val.toLocaleString() + suffix;
+      if (p < 1) requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+  });
 }
 
 /* ── ROUTER ──────────────────────────────────────────── */
@@ -152,18 +327,23 @@ function route(id){
   $("#tbPath").textContent = "/" + (n ? n.label.toUpperCase().replace(/ /g,"_") : id.toUpperCase());
   const view = $("#view");
   view.classList.remove("view-enter"); void view.offsetWidth; view.classList.add("view-enter");
+  sweepFx();
   ({ command:renderCommand, tracker:renderTracker, dossiers:renderDossiers, intel:renderIntel,
      ops:renderOps, interdiction:renderInterdiction, comms:renderComms, archive:renderArchive,
      standards:renderStandards }[id])();
+  setTimeout(() => { glitchTitle(); animateCounters(); }, 160);
   window.scrollTo(0,0);
 }
 
 /* ── shell bits ──────────────────────────────────────── */
 function enterApp(){
   $("#boot").classList.add("hidden");
+  $("#gate").classList.add("hidden");
   $("#app").classList.remove("hidden");
   $("#sideUser").textContent = OBS.operative;
   loadStore();
+  initGalaxy();
+  showWelcome();
   buildNav();
   setInterval(() => {
     const d = new Date();

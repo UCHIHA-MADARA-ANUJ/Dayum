@@ -9,11 +9,15 @@
 </head>
 <body>
 
-<!-- ═══════════════ BOOT SCREEN ═══════════════ -->
-<div id="boot" class="boot">
-  <div class="boot-scan"></div>
-  <div class="boot-inner">
-    <svg class="boot-emblem" viewBox="0 0 100 100" aria-hidden="true">
+<!-- ═══════════════ GALACTIC BACKGROUND ═══════════════ -->
+<canvas id="galaxy" class="galaxy"></canvas>
+
+<!-- ═══════════════ GATE — CLICK TO INITIALIZE ═══════════════ -->
+<div id="gate" class="gate">
+  <div class="gate-vignette"></div>
+  <div class="gate-scan"></div>
+  <div class="gate-inner">
+    <svg class="gate-emblem" viewBox="0 0 100 100" aria-hidden="true">
       <defs>
         <radialGradient id="emg" cx="50%" cy="50%" r="60%">
           <stop offset="0%" stop-color="#ff2a44"/>
@@ -24,18 +28,37 @@
       <path d="M50 3 61 24 84 16 76 39 97 50 76 61 84 84 61 76 50 97 39 76 16 84 24 61 3 50 24 39 16 16 39 24z" fill="url(#emg)" stroke="#e01e37" stroke-width="1.5"/>
       <circle cx="50" cy="50" r="16" fill="none" stroke="#e8e4d8" stroke-width="2"/>
       <circle cx="50" cy="50" r="7" fill="#e01e37"/>
-      <path d="M50 34v-8M50 66v8M34 50h-8M66 50h8" stroke="#e8e4d8" stroke-width="2"/>
     </svg>
-    <h1 class="boot-title">OBSIDIAN</h1>
-    <p class="boot-sub">IMPERIAL SECURITY NETWORK · JEDI APPREHENSION DIVISION</p>
-    <div class="boot-line"></div>
-    <p class="boot-clearance">CLEARANCE LEVEL <span>ALPHA-7</span> REQUIRED</p>
-    <div class="boot-form">
-      <input id="bootPass" type="password" placeholder="ENTER PASSPHRASE" autocomplete="off" spellcheck="false">
-      <button id="bootGo" class="btn btn-red">AUTHENTICATE</button>
+    <h1 class="gate-title">OBSIDIAN</h1>
+    <div class="gate-sub">IMPERIAL SECURITY NETWORK · JEDI APPREHENSION DIVISION</div>
+    <div class="gate-line"></div>
+    <div class="gate-warn">⚠ ENCRYPTED TERMINAL — AUTHORIZED PERSONNEL ONLY</div>
+    <button id="gateBtn" class="gate-btn">▶ &nbsp;CLICK TO INITIALIZE SEQUENCE</button>
+    <div class="gate-foot">CLEARANCE LEVEL ALPHA-7 REQUIRED · UNAUTHORIZED ACCESS IS PUNISHABLE BY DEATH</div>
+  </div>
+</div>
+
+<!-- ═══════════════ BOOT SEQUENCE ═══════════════ -->
+<div id="boot" class="boot hidden">
+  <div class="boot-vignette"></div>
+  <div class="boot-term">
+    <div class="boot-head">OBSIDIAN BOOTLOADER <span>v1.0.0</span></div>
+    <div class="boot-lines" id="bootLines"></div>
+    <div class="boot-prog" id="bootProg"><div class="boot-prog-bar" id="bootProgBar"></div></div>
+    <div class="boot-pass hidden" id="bootPassWrap">
+      <span class="boot-prompt">CLEARANCE&gt;</span>
+      <input id="bootPass" type="password" placeholder="••••••••••••" autocomplete="off" spellcheck="false">
+      <button id="bootGo" class="btn btn-red btn-sm">AUTH</button>
     </div>
-    <p id="bootStatus" class="boot-status"></p>
-    <p class="boot-warn">UNAUTHORIZED ACCESS IS PUNISHABLE BY DEATH</p>
+    <div class="boot-status" id="bootStatus"></div>
+  </div>
+</div>
+
+<!-- ═══════════════ WELCOME OVERLAY ═══════════════ -->
+<div id="welcome" class="welcome hidden">
+  <div class="welcome-inner">
+    <div class="welcome-title" id="welcomeTitle">WELCOME, OPERATIVE</div>
+    <div class="welcome-sub" id="welcomeSub">DECRYPTING INTERFACE…</div>
   </div>
 </div>
 
@@ -43,6 +66,13 @@
 <div id="app" class="app hidden">
   <div class="scanlines"></div>
   <div class="crt-vignette"></div>
+  <div class="hud-corners" aria-hidden="true">
+    <span class="hc hc-tl"></span><span class="hc hc-tr"></span>
+    <span class="hc hc-bl"></span><span class="hc hc-br"></span>
+    <div class="hud-tag hud-tl">OBSIDIAN // SECURE LINK</div>
+    <div class="hud-tag hud-br" id="hudVer">OBSIDIAN v1.0.0 · ALPHA-7</div>
+  </div>
+  <div id="sweep" class="sweep-overlay"></div>
 
   <aside class="sidebar">
     <div class="side-brand">
