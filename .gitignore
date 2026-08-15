@@ -1,0 +1,5 @@
+obsidian-command/tools/node_modules/
+obsidian-command/tools/venv/
+obsidian-command/deliverables/video/footage/
+obsidian-command/tools/ffmpeg
+obsidian-command/tools/nsslibs/*.so

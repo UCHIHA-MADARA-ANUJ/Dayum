@@ -1,0 +1,5 @@
+.toast{position:fixed;bottom:26px;right:26px;z-index:200;background:var(--panel2);border:1px solid var(--line2);border-left:3px solid var(--green);color:var(--bone);font-family:var(--font-mono);font-size:11px;letter-spacing:.1em;padding:13px 18px;box-shadow:var(--shadow);transform:translateY(20px);opacity:0;transition:all .3s;max-width:340px;text-transform:uppercase}
+.toast.show{transform:none;opacity:1}
+.toast span{color:var(--green);margin-right:8px}
+.toast-error{border-left-color:var(--red2)}
+.toast-error span{color:var(--red2)}

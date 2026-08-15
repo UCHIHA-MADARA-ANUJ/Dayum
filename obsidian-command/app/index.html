@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OBSIDIAN — Imperial Security Network</title>
+<link rel="stylesheet" href="css/obsidian.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath fill='%23e01e37' d='M16 1 30 9v14L16 31 2 23V9z'/%3E%3C/svg%3E">
+</head>
+<body>
+
+<!-- ═══════════════ BOOT SCREEN ═══════════════ -->
+<div id="boot" class="boot">
+  <div class="boot-scan"></div>
+  <div class="boot-inner">
+    <svg class="boot-emblem" viewBox="0 0 100 100" aria-hidden="true">
+      <defs>
+        <radialGradient id="emg" cx="50%" cy="50%" r="60%">
+          <stop offset="0%" stop-color="#ff2a44"/>
+          <stop offset="70%" stop-color="#7a0e1e"/>
+          <stop offset="100%" stop-color="#2a050c"/>
+        </radialGradient>
+      </defs>
+      <path d="M50 3 61 24 84 16 76 39 97 50 76 61 84 84 61 76 50 97 39 76 16 84 24 61 3 50 24 39 16 16 39 24z" fill="url(#emg)" stroke="#e01e37" stroke-width="1.5"/>
+      <circle cx="50" cy="50" r="16" fill="none" stroke="#e8e4d8" stroke-width="2"/>
+      <circle cx="50" cy="50" r="7" fill="#e01e37"/>
+      <path d="M50 34v-8M50 66v8M34 50h-8M66 50h8" stroke="#e8e4d8" stroke-width="2"/>
+    </svg>
+    <h1 class="boot-title">OBSIDIAN</h1>
+    <p class="boot-sub">IMPERIAL SECURITY NETWORK · JEDI APPREHENSION DIVISION</p>
+    <div class="boot-line"></div>
+    <p class="boot-clearance">CLEARANCE LEVEL <span>ALPHA-7</span> REQUIRED</p>
+    <div class="boot-form">
+      <input id="bootPass" type="password" placeholder="ENTER PASSPHRASE" autocomplete="off" spellcheck="false">
+      <button id="bootGo" class="btn btn-red">AUTHENTICATE</button>
+    </div>
+    <p id="bootStatus" class="boot-status"></p>
+    <p class="boot-warn">UNAUTHORIZED ACCESS IS PUNISHABLE BY DEATH</p>
+  </div>
+</div>
+
+<!-- ═══════════════ APP SHELL ═══════════════ -->
+<div id="app" class="app hidden">
+  <div class="scanlines"></div>
+  <div class="crt-vignette"></div>
+
+  <aside class="sidebar">
+    <div class="side-brand">
+      <svg viewBox="0 0 100 100" class="side-emblem" aria-hidden="true">
+        <path d="M50 3 61 24 84 16 76 39 97 50 76 61 84 84 61 76 50 97 39 76 16 84 24 61 3 50 24 39 16 16 39 24z" fill="#0d0d14" stroke="#e01e37" stroke-width="2"/>
+        <circle cx="50" cy="50" r="14" fill="none" stroke="#e8e4d8" stroke-width="2"/>
+        <circle cx="50" cy="50" r="6" fill="#e01e37"/>
+      </svg>
+      <div>
+        <div class="side-name">OBSIDIAN</div>
+        <div class="side-tag">SECURITY NETWORK</div>
+      </div>
+    </div>
+    <nav class="side-nav" id="nav"></nav>
+    <div class="side-foot">
+      <div class="side-status"><span class="dot dot-red"></span> CLASSIFIED LINK ACTIVE</div>
+      <div class="side-user">OPERATIVE <span id="sideUser">N-771</span></div>
+    </div>
+  </aside>
+
+  <div class="main">
+    <header class="topbar">
+      <div class="tb-left">
+        <div class="tb-title">IMPERIAL HUNT COMMAND</div>
+        <div class="tb-path" id="tbPath">/COMMAND</div>
+      </div>
+      <div class="tb-right">
+        <div class="tb-clear">CLEARANCE <b>ALPHA-7</b></div>
+        <div class="tb-clock" id="tbClock">--:--:--</div>
+        <button id="logout" class="btn btn-ghost btn-sm">SEVER LINK</button>
+      </div>
+    </header>
+    <main class="content" id="view"></main>
+  </div>
+</div>
+
+<!-- ═══════════════ MODAL ROOT ═══════════════ -->
+<div id="modalRoot"></div>
+
+<script src="js/data.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
