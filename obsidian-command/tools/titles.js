@@ -59,6 +59,13 @@ const CARDS = {
     <div class="sub red">Imperial Security Network</div>
     <div class="sub" style="margin-top:18px;font-size:17px">Jedi Apprehension Division</div>
     <div class="foot">TWELVE BLADES · ONE PURPOSE</div>`),
+  "card-scattered.png": card("warship.png", `
+    <div class="tag">IMPERIAL BROADCAST — CLASSIFIED</div>
+    ${EMBLEM}
+    <h1 style="font-size:64px;line-height:1.3">BUT SCATTERED<br>IS NOT <span style="color:#e01e37">HIDDEN.</span></h1>
+    <div class="line"></div>
+    <div class="sub">Every whisper is a thread we can pull</div>
+    <div class="foot">OBSIDIAN · IMPERIAL SECURITY NETWORK</div>`),
   "card-hunt.png": card("warship.png", `
     ${EMBLEM}
     <h1 style="font-size:74px;line-height:1.25">THE HUNT<br><span style="color:#e01e37">NEVER ENDS</span></h1>
