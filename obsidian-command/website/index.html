@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OBSIDIAN — Gateway</title>
+<style>
+@font-face{font-family:'Cinzel';src:url('../app/fonts/cinzel-latin-900-normal.woff2') format('woff2');font-weight:900}
+@font-face{font-family:'Cinzel';src:url('../app/fonts/cinzel-latin-700-normal.woff2') format('woff2');font-weight:700}
+@font-face{font-family:'Inter';src:url('../app/fonts/inter-latin-400-normal.woff2') format('woff2');font-weight:400}
+@font-face{font-family:'Inter';src:url('../app/fonts/inter-latin-500-normal.woff2') format('woff2');font-weight:500}
+@font-face{font-family:'Inter';src:url('../app/fonts/inter-latin-600-normal.woff2') format('woff2');font-weight:600}
+@font-face{font-family:'Inter';src:url('../app/fonts/inter-latin-700-normal.woff2') format('woff2');font-weight:700}
+@font-face{font-family:'PlexMono';src:url('../app/fonts/ibm-plex-mono-latin-400-normal.woff2') format('woff2');font-weight:400}
+
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--red:#C1121F;--red2:#E8484F;--ink:#201B14;--cream:#F6F3EA;--muted:#8F8776}
+html,body{height:100%;background:#08070A;overflow:hidden;font-family:'Inter',sans-serif}
+canvas{position:fixed;inset:0;width:100%;height:100%;display:block}
+#stars{opacity:0;transition:opacity 1.6s ease}
+#swirl,#streaks{opacity:0}
+.stage{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;z-index:5;pointer-events:none}
+
+/* ── PHASE 1 : VOID text ── */
+#voidText{font-family:'PlexMono',monospace;font-size:13px;letter-spacing:.5em;color:#C9C2B4;text-transform:uppercase;position:fixed;top:46%;left:0;right:0;text-align:center;z-index:6;opacity:0}
+#voidText .crs{animation:blink 1s steps(1) infinite;color:var(--red2)}
+@keyframes blink{50%{opacity:0}}
+
+/* ── PHASE 2-3 : PORTAL ── */
+#portal{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);width:min(420px,70vw);height:min(420px,70vw);z-index:4;opacity:0}
+#portal .glow{position:absolute;inset:-18%;background:radial-gradient(circle,rgba(193,18,31,.28) 0%,rgba(193,18,31,.08) 45%,transparent 70%);filter:blur(6px);animation:glowPulse 2.4s ease-in-out infinite}
+@keyframes glowPulse{0%,100%{opacity:.65;transform:scale(1)}50%{opacity:1;transform:scale(1.06)}}
+#portal svg{position:absolute;inset:0;width:100%;height:100%}
+#portal .ring1{stroke:#C9C2B4;stroke-width:2;fill:none;stroke-dasharray:4 10;animation:spinR 30s linear infinite}
+#portal .ring2{stroke:#C1121F;stroke-width:3;fill:none;stroke-dasharray:60 20;animation:spinR 8s linear infinite;filter:drop-shadow(0 0 8px rgba(193,18,31,.8))}
+#portal .ring3{stroke:#E8484F;stroke-width:1.5;fill:none;stroke-dasharray:2 14;animation:spinR 18s linear infinite reverse}
+#portal .arcs{stroke:#F6F3EA;stroke-width:2;fill:none;stroke-dasharray:10 240;animation:spinR 4s linear infinite}
+#portal .core{position:absolute;inset:28%;border-radius:50%;background:radial-gradient(circle,#3A0D12 0%,#12080A 65%,transparent 72%);opacity:.85}
+@keyframes spinR{to{transform:rotate(360deg)}}
+#charge{position:fixed;bottom:34px;right:44px;font-family:'PlexMono',monospace;font-size:12px;letter-spacing:.2em;color:#C9C2B4;z-index:8;opacity:0}
+#charge b{color:var(--red2);font-weight:400}
+#charge .bar{display:block;width:200px;height:3px;background:#241F18;margin-top:8px;margin-left:auto;position:relative;overflow:hidden}
+#charge .fill{position:absolute;inset:0;width:0%;background:linear-gradient(90deg,#C1121F,#E8484F);transition:width .18s linear}
+#status{position:fixed;bottom:34px;left:44px;font-family:'PlexMono',monospace;font-size:11px;letter-spacing:.26em;color:#6E675C;text-transform:uppercase;z-index:8;opacity:0}
+#status b{color:#C9C2B4;font-weight:400}
+
+/* ── PHASE 4 : JUMP (streaks handled by canvas) ── */
+#flash{position:fixed;inset:0;background:radial-gradient(circle at 50% 50%,#FFF 0%,#FFD9DA 30%,#8F0D18 70%,#12080A 100%);opacity:0;z-index:9;pointer-events:none}
+
+/* ── PHASE 5 : ARRIVAL ── */
+#arrival{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:10;opacity:0}
+#arrival .sigil{width:130px;height:130px;margin-bottom:34px;filter:drop-shadow(0 0 40px rgba(193,18,31,.55))}
+#arrival .title{font-family:'Cinzel',serif;font-weight:900;font-size:clamp(44px,7vw,84px);letter-spacing:.3em;text-indent:.3em;color:var(--cream);text-shadow:0 0 50px rgba(193,18,31,.5)}
+#arrival .sub{font-family:'PlexMono',monospace;font-size:11px;letter-spacing:.44em;text-indent:.44em;color:#8F8776;margin-top:16px;text-transform:uppercase}
+#arrival .line{width:min(420px,60vw);height:1px;background:linear-gradient(90deg,transparent,#C1121F,transparent);margin:26px auto 0}
+
+/* ── REVEAL SWEEP ── */
+#sweep{position:fixed;inset:0;z-index:11;pointer-events:none;background:linear-gradient(90deg,transparent 0%,rgba(193,18,31,.25) 45%,#08070A 50%,rgba(193,18,31,.25) 55%,transparent 100%);transform:translateX(-110%);}
+@keyframes sweepReveal{0%{transform:translateX(-110%)}100%{transform:translateX(110%)}}
+
+/* ── POST-LOAD CONTENT (placeholder hero) ── */
+#site{position:fixed;inset:0;z-index:12;display:none;background:#F6F3EA;color:var(--ink);overflow-y:auto}
+#site .inner{padding:9vh 8vw;max-width:1200px;margin:0 auto}
+#site .tag{font-family:'PlexMono',monospace;font-size:11px;letter-spacing:.3em;color:var(--red);text-transform:uppercase;margin-bottom:22px}
+#site h1{font-family:'Cinzel',serif;font-weight:900;font-size:clamp(52px,8vw,110px);line-height:.95;text-transform:uppercase;letter-spacing:-.01em}
+#site h1 em{font-style:italic;font-weight:400;color:var(--red)}
+#site p{font-family:'Inter',sans-serif;font-size:16px;line-height:1.8;color:#4A4338;max-width:560px;margin-top:26px}
+#site .next{margin-top:44px;font-family:'PlexMono',monospace;font-size:10px;letter-spacing:.24em;color:#8F8776;text-transform:uppercase;border-top:1px solid #E2DBC9;padding-top:18px;max-width:560px}
+</style>
+</head>
+<body>
+
+<canvas id="stars"></canvas>
+<canvas id="swirl"></canvas>
+<canvas id="streaks"></canvas>
+
+<div id="voidText">TRANSMISSION RECEIVED<span class="crs">▊</span></div>
+
+<div id="portal">
+  <div class="glow"></div>
+  <div class="core"></div>
+  <svg viewBox="0 0 400 400">
+    <circle class="ring1" cx="200" cy="200" r="190"/>
+    <circle class="ring2" cx="200" cy="200" r="168"/>
+    <circle class="arcs" cx="200" cy="200" r="146"/>
+    <circle class="ring3" cx="200" cy="200" r="120"/>
+    <circle class="arcs" cx="200" cy="200" r="96" style="animation-duration:3s"/>
+  </svg>
+</div>
+
+<div id="charge"><b id="chargeN">000</b> / 100<span class="bar"><span class="fill" id="chargeF"></span></span></div>
+<div id="status">ACQUIRING BEACON <b id="statusT"></b></div>
+
+<div id="flash"></div>
+
+<div id="arrival">
+  <svg class="sigil" viewBox="0 0 100 100">
+    <defs><radialGradient id="g" cx="50%" cy="50%" r="60%"><stop offset="0%" stop-color="#E8484F"/><stop offset="70%" stop-color="#7A0D18"/><stop offset="100%" stop-color="#2A0509"/></radialGradient></defs>
+    <path d="M50 3 61 24 84 16 76 39 97 50 76 61 84 84 61 76 50 97 39 76 16 84 24 61 3 50 24 39 16 16 39 24z" fill="url(#g)" stroke="#C1121F" stroke-width="1.5"/>
+    <circle cx="50" cy="50" r="16" fill="none" stroke="#F6F3EA" stroke-width="2"/>
+    <circle cx="50" cy="50" r="7" fill="#C1121F"/>
+  </svg>
+  <div class="title">OBSIDIAN</div>
+  <div class="sub">The Empire's Nervous System</div>
+  <div class="line"></div>
+</div>
+
+<div id="sweep"></div>
+
+<div id="site">
+  <div class="inner">
+    <div class="tag">TS '26 · Creative Prelims · Path 2</div>
+    <h1>OBSIDIAN<br/><em>the nervous system</em></h1>
+    <p>The classified command portal for the post-Order-66 hunt — tracking, planning, communication and counter-recruitment, coordinated into one organism.</p>
+    <div class="next">SITE SECTIONS INCOMING — HERO · MANIFESTO · ECOSYSTEM · PROOF · 3D · FILM · TEAM</div>
+  </div>
+</div>
+
+<script>
+/* ═══════════════ AUDIO (synthesized, no files) ═══════════════ */
+const AudioFX = (() => {
+  let ctx = null;
+  function ac(){ if(!ctx){ try{ ctx = new (window.AudioContext||window.webkitAudioContext)(); }catch(e){ return null; } } if(ctx.state==='suspended') ctx.resume(); return ctx; }
+  function osc(type, f0, f1, dur, vol, when=0){
+    const c = ac(); if(!c) return;
+    const t = c.currentTime + when;
+    const o = c.createOscillator(), g = c.createGain();
+    o.type = type;
+    o.frequency.setValueAtTime(f0, t);
+    if (f1) o.frequency.exponentialRampToValueAtTime(Math.max(f1,1), t+dur);
+    g.gain.setValueAtTime(0, t);
+    g.gain.linearRampToValueAtTime(vol, t+0.02);
+    g.gain.exponentialRampToValueAtTime(0.0001, t+dur);
+    o.connect(g); g.connect(c.destination);
+    o.start(t); o.stop(t+dur+0.05);
+  }
+  function noise(dur, vol, when=0, freq=1200){
+    const c = ac(); if(!c) return;
+    const t = c.currentTime + when;
+    const n = Math.floor(dur*c.sampleRate);
+    const buf = c.createBuffer(1, n, c.sampleRate);
+    const d = buf.getChannelData(0);
+    for(let i=0;i<n;i++) d[i] = (Math.random()*2-1) * (1-i/n);
+    const src = c.createBufferSource(); src.buffer = buf;
+    const f = c.createBiquadFilter(); f.type='lowpass'; f.frequency.value = freq;
+    const g = c.createGain(); g.gain.setValueAtTime(vol, t);
+    g.gain.exponentialRampToValueAtTime(0.0001, t+dur);
+    src.connect(f); f.connect(g); g.connect(c.destination);
+    src.start(t);
+  }
+  return {
+    unlock(){ ac(); },
+    ping(p){ osc('sine', 520+p*60, null, 0.09, 0.05); },
+    riser(){
+      osc('sawtooth', 40, 220, 5.6, 0.10);
+      osc('sawtooth', 41, 330, 5.6, 0.07, 0.1);
+    },
+    whoosh(){ noise(1.5, 0.5, 0, 900); osc('sine', 180, 40, 1.4, 0.18); },
+    boom(){ osc('sine', 90, 28, 1.8, 0.7); noise(1.0, 0.45, 0, 500); },
+    sweep(){ noise(0.7, 0.2, 0, 2000); }
+  };
+})();
+
+/* ═══════════════ STARFIELD ═══════════════ */
+const starsC = document.getElementById('stars'), sctx = starsC.getContext('2d');
+let W, H, stars = [];
+function resize(){ W = starsC.width = innerWidth; H = starsC.height = innerHeight; makeStars(); }
+function makeStars(){
+  stars = [];
+  const n = Math.floor(W*H/2400);
+  for(let i=0;i<n;i++) stars.push({ x:Math.random()*W, y:Math.random()*H, r:Math.random()<.9?0.5+Math.random():1.2+Math.random()*1.2, tw:Math.random()*6.28, ts:0.3+Math.random()*1.2, c:Math.random()<.12?'193,18,31':Math.random()<.2?'159,180,216':'255,255,255' });
+}
+resize(); addEventListener('resize', resize);
+(function loopStars(){
+  sctx.clearRect(0,0,W,H);
+  for(const s of stars){
+    s.tw += 0.015*s.ts;
+    const a = 0.15 + 0.6*Math.abs(Math.sin(s.tw));
+    sctx.beginPath(); sctx.arc(s.x,s.y,s.r,0,6.28);
+    sctx.fillStyle = `rgba(${s.c},${a})`; sctx.fill();
+  }
+  requestAnimationFrame(loopStars);
+})();
+
+/* ═══════════════ PORTAL SWIRL ═══════════════ */
+const swirlC = document.getElementById('swirl'), wctx = swirlC.getContext('2d');
+const parts = [];
+function spawnParts(){
+  parts.length = 0;
+  for(let i=0;i<160;i++) parts.push({ a:Math.random()*6.28, r:0.55+Math.random()*0.44, sp:0.004+Math.random()*0.012, sz:1+Math.random()*2.4 });
+}
+spawnParts();
+(function loopSwirl(){
+  wctx.clearRect(0,0,W,H);
+  const cx=W/2, cy=H/2, R=Math.min(W,H)*0.36;
+  for(const p of parts){
+    p.a += p.sp; p.r *= 0.985;
+    const x=cx+Math.cos(p.a)*R*p.r, y=cy+Math.sin(p.a)*R*p.r*0.85;
+    const a = Math.min(1, (1-p.r)*6);
+    wctx.beginPath(); wctx.arc(x,y,p.sz,0,6.28);
+    wctx.fillStyle = `rgba(232,72,79,${a*0.75})`; wctx.fill();
+  }
+  requestAnimationFrame(loopSwirl);
+})();
+
+/* ═══════════════ HYPERSPACE STREAKS ═══════════════ */
+const strC = document.getElementById('streaks'), kctx = strC.getContext('2d');
+let streaks = [], streaking = false;
+function spawnStreaks(){
+  streaks = [];
+  for(let i=0;i<260;i++){ const a = Math.random()*6.28; streaks.push({a, sp:6+Math.random()*14, len:0.12+Math.random()*0.3}); }
+}
+spawnStreaks();
+function loopStreaks(){
+  kctx.clearRect(0,0,W,H);
+  if(!streaking) { requestAnimationFrame(loopStreaks); return; }
+  const cx=W/2, cy=H/2;
+  for(const s of streaks){
+    s.sp *= 0.982;
+    const x1=cx+Math.cos(s.a)*40, y1=cy+Math.sin(s.a)*40;
+    const x2=cx+Math.cos(s.a)*(40+s.sp*24), y2=cy+Math.sin(s.a)*(40+s.sp*24);
+    const g=kctx.createLinearGradient(x1,y1,x2,y2);
+    g.addColorStop(0,'rgba(246,243,234,0)');
+    g.addColorStop(1,`rgba(232,72,79,${Math.min(1,s.sp/16)})`);
+    kctx.strokeStyle=g; kctx.lineWidth=1.6;
+    kctx.beginPath(); kctx.moveTo(x1,y1); kctx.lineTo(x2,y2); kctx.stroke();
+  }
+  requestAnimationFrame(loopStreaks);
+}
+loopStreaks();
+
+/* ═══════════════ SEQUENCE ═══════════════ */
+const $ = id => document.getElementById(id);
+const sleep = ms => new Promise(r=>setTimeout(r,ms));
+const STATUS = ['ACQUIRING BEACON','SPINNING GATEWAY','CHARGING CORE','STABILIZING TUNNEL','TRANSLOCATING'];
+let running = true;
+
+async function typeVoid(){
+  const el = $('voidText');
+  el.style.opacity = 1;
+  const txt = 'TRANSMISSION RECEIVED';
+  for(let i=0;i<=txt.length;i++){
+    el.innerHTML = txt.slice(0,i)+'<span class="crs">▊</span>';
+    await sleep(34);
+  }
+  await sleep(500);
+  el.style.transition = 'opacity .8s'; el.style.opacity = 0;
+}
+
+async function gateway(){
+  const portal = $('portal'), charge = $('charge'), status = $('status');
+  portal.style.transition = 'opacity .9s ease, transform 1.6s cubic-bezier(.2,.9,.3,1)';
+  portal.style.opacity = 1;
+  portal.style.transform = 'translate(-50%,-50%) scale(0.2) rotate(0deg)';
+  await sleep(60);
+  portal.style.transform = 'translate(-50%,-50%) scale(1) rotate(120deg)';
+  charge.style.opacity = 1; status.style.opacity = 1;
+  // swirl fades in
+  $('swirl').style.transition = 'opacity 1.2s'; $('swirl').style.opacity = .9;
+  // riser
+  AudioFX.riser();
+  let pct = 0;
+  const marks = [25,50,75,100];
+  await new Promise(res => {
+    const iv = setInterval(() => {
+      pct += 0.55 + Math.random()*0.9;
+      if(pct>=100){ pct=100; clearInterval(iv); res(); }
+      $('chargeN').textContent = String(Math.floor(pct)).padStart(3,'0');
+      $('chargeF').style.width = pct+'%';
+      const st = Math.min(3, Math.floor(pct/34));
+      $('statusT').textContent = STATUS[st];
+      if(marks.length && pct >= marks[0]){ AudioFX.ping(marks.shift()); }
+    }, 40);
+  });
+  $('statusT').textContent = STATUS[3];
+  await sleep(300);
+}
+
+async function jump(){
+  // flash
+  $('flash').style.transition = 'opacity .12s'; $('flash').style.opacity = .92;
+  $('portal').style.transition = 'opacity .18s'; $('portal').style.opacity = 0;
+  $('swirl').style.opacity = 0; $('charge').style.opacity = 0; $('status').style.opacity = 0;
+  AudioFX.whoosh();
+  await sleep(90);
+  $('flash').style.transition = 'opacity .5s'; $('flash').style.opacity = 0;
+  streaking = true;
+  $('streaks').style.opacity = 1;
+  await sleep(1350);
+  streaking = false;
+  $('streaks').style.transition = 'opacity .5s'; $('streaks').style.opacity = 0;
+}
+
+async function arrival(){
+  const a = $('arrival');
+  a.style.transition = 'opacity .9s'; a.style.opacity = 1;
+  AudioFX.boom();
+  a.style.animation = 'none';
+  a.offsetHeight;
+  a.style.animation = 'arriveIn .7s cubic-bezier(.16,1,.3,1)';
+  const style = document.createElement('style');
+  style.textContent = `@keyframes arriveIn{0%{transform:scale(.86);opacity:0}55%{transform:scale(1.04);opacity:1}100%{transform:scale(1)}}`;
+  document.head.appendChild(style);
+  await sleep(1400);
+  // sweep reveal
+  AudioFX.sweep();
+  $('sweep').style.animation = 'sweepReveal .9s cubic-bezier(.76,0,.24,1) forwards';
+  await sleep(420);
+  $('arrival').style.transition = 'opacity .5s'; $('arrival').style.opacity = 0;
+  $('site').style.display = 'block';
+  $('site').style.opacity = 0;
+  $('site').style.transition = 'opacity .6s';
+  $('site').style.opacity = 1;
+  await sleep(600);
+  $('sweep').style.display = 'none';
+}
+
+document.addEventListener('click', async function initOnce(){
+  document.removeEventListener('click', initOnce);
+  AudioFX.unlock();
+  $('stars').style.opacity = 1;
+  await typeVoid();
+  await gateway();
+  await jump();
+  await arrival();
+}, { once:true });
+
+/* show the void prompt immediately */
+$('voidText').style.opacity = 1;
+$('voidText').innerHTML = 'CLICK TO INITIALIZE<span class="crs">▊</span>';
+</script>
+</body>
+</html>
