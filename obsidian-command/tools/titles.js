@@ -69,7 +69,7 @@ const CARDS = {
     <div class="tag">TS '26 · CREATIVE PRELIMS</div>
     ${EMBLEM}
     <div class="end-title">OBSIDIAN</div>
-    <div class="end-team">TEAM <span style="color:#e8e4d8">________</span></div>
+    <div class="end-team">ANUJ PHULERA · AARAV CHOUDHARY · JEEHAAN KWATRA</div>
     <div class="line"></div>
     <div class="sub red">The hunt begins</div>
     <div class="foot">ALL PERSONS, PLACES & RECORDS ARE ORIGINAL CREATIONS OF THE OBSIDIAN UNIVERSE</div>`)

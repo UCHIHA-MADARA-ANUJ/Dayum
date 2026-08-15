@@ -97,7 +97,7 @@ def s_title():
     textbox(s, Inches(1), Inches(2.9), Inches(11.33), Inches(1.6), "OBSIDIAN", 72, BONE, True, "Cinzel", PP_ALIGN.CENTER)
     textbox(s, Inches(1), Inches(4.05), Inches(11.33), Inches(0.5), "IMPERIAL SECURITY NETWORK", 20, RED2, False, "Cinzel", PP_ALIGN.CENTER)
     textbox(s, Inches(1), Inches(4.6), Inches(11.33), Inches(0.5), "JEDI APPREHENSION DIVISION · TS '26 CREATIVE PRELIMS", 12, STEEL, False, "Consolas", PP_ALIGN.CENTER)
-    textbox(s, Inches(1), Inches(6.6), Inches(11.33), Inches(0.4), "TEAM ______ · SCHOOL ______", 13, DIM, False, "Consolas", PP_ALIGN.CENTER)
+    textbox(s, Inches(1), Inches(6.5), Inches(11.33), Inches(0.8), "ANUJ PHULERA · AARAV CHOUDHARY · JEEHAAN KWATRA\nSCHOOL ______ · TS '26 CREATIVE PRELIMS", 13, DIM, False, "Consolas", PP_ALIGN.CENTER)
     return s
 
 def s_agenda():
@@ -267,7 +267,7 @@ def s_closing():
     render_bg_img(s, os.path.join(REND, "throne.png")); veil(s, 0.5)
     textbox(s, Inches(1), Inches(2.6), Inches(11.33), Inches(1.2), "THE HUNT NEVER ENDS", 52, BONE, True, "Cinzel", PP_ALIGN.CENTER)
     textbox(s, Inches(1), Inches(3.8), Inches(11.33), Inches(0.6), "UNTIL THE LAST EMBER IS COLD", 18, RED2, False, "Consolas", PP_ALIGN.CENTER)
-    textbox(s, Inches(1), Inches(5.9), Inches(11.33), Inches(0.5), "OBSIDIAN · IMPERIAL SECURITY NETWORK · TS '26", 13, DIM, False, "Consolas", PP_ALIGN.CENTER)
+    textbox(s, Inches(1), Inches(5.7), Inches(11.33), Inches(0.9), "OBSIDIAN · IMPERIAL SECURITY NETWORK · TS '26\nANUJ PHULERA · AARAV CHOUDHARY · JEEHAAN KWATRA", 13, DIM, False, "Consolas", PP_ALIGN.CENTER)
     return s
 
 for fn in [s_title, s_agenda, s_solution, s_tracker, s_dossiers, s_ops, s_intel, s_comms, s_ux, s_3d, s_video, s_security, s_impact, s_closing]:
