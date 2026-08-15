@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OBSIDIAN — Project Showcase | TS '26</title>
+<style>
+@font-face{font-family:'Cinzel';src:url('../../app/fonts/cinzel-latin-900-normal.woff2') format('woff2');font-weight:900;font-display:swap}
+@font-face{font-family:'Cinzel';src:url('../../app/fonts/cinzel-latin-700-normal.woff2') format('woff2');font-weight:700;font-display:swap}
+@font-face{font-family:'Cinzel';src:url('../../app/fonts/cinzel-latin-400-normal.woff2') format('woff2');font-weight:400;font-display:swap}
+@font-face{font-family:'PlexMono';src:url('../../app/fonts/ibm-plex-mono-latin-400-normal.woff2') format('woff2');font-weight:400;font-display:swap}
+@font-face{font-family:'PlexMono';src:url('../../app/fonts/ibm-plex-mono-latin-700-normal.woff2') format('woff2');font-weight:700;font-display:swap}
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#050507;--bg2:#08080d;--panel:#0b0b12;--line:#1e1e2e;--line2:#2a2a3e;--red:#e01e37;--red2:#ff2a44;--bone:#e8e4d8;--steel:#8a8a94;--dim:#5a5a66;--amber:#f4a300}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--bone);font-family:'PlexMono',monospace;overflow-x:hidden}
+.scan{position:fixed;inset:0;pointer-events:none;z-index:99;background:repeating-linear-gradient(0deg,rgba(255,255,255,.02) 0 1px,transparent 1px 3px)}
+nav{position:fixed;top:0;left:0;right:0;z-index:50;display:flex;align-items:center;justify-content:space-between;padding:18px 44px;background:rgba(5,5,7,.85);backdrop-filter:blur(6px);border-bottom:1px solid var(--line)}
+nav .brand{display:flex;align-items:center;gap:12px}
+nav .brand svg{width:30px;height:30px}
+nav .brand span{font-family:'Cinzel',serif;font-weight:900;letter-spacing:.3em;font-size:15px}
+nav a{color:var(--steel);text-decoration:none;font-size:11px;letter-spacing:.22em;margin-left:26px;text-transform:uppercase;transition:color .2s}
+nav a:hover{color:var(--red2)}
+.hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;position:relative;padding:80px 20px}
+.hero .stars{position:absolute;inset:0;overflow:hidden}
+.hero .stars span{position:absolute;width:2px;height:2px;background:#3a3a4a;border-radius:50%;animation:tw 4s infinite}
+@keyframes tw{0%,100%{opacity:.2}50%{opacity:1}}
+.hero .emblem{width:130px;height:130px;margin-bottom:30px;filter:drop-shadow(0 0 30px rgba(224,30,55,.6));animation:spin 20s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.hero h1{font-family:'Cinzel',serif;font-weight:900;font-size:clamp(44px,8vw,92px);letter-spacing:.3em;text-indent:.3em;text-shadow:0 0 50px rgba(224,30,55,.5)}
+.hero .sub{font-size:12px;letter-spacing:.5em;text-indent:.5em;color:var(--steel);margin-top:18px;text-transform:uppercase}
+.hero .line{width:420px;max-width:80vw;height:1px;margin:34px auto;background:linear-gradient(90deg,transparent,var(--red),transparent)}
+.hero .cta{display:flex;gap:16px;margin-top:10px;flex-wrap:wrap;justify-content:center}
+.btn{display:inline-block;padding:13px 28px;border:1px solid var(--line2);color:var(--bone);text-decoration:none;font-size:11px;letter-spacing:.24em;text-transform:uppercase;transition:all .2s;background:var(--panel)}
+.btn:hover{border-color:var(--red2);box-shadow:0 0 18px rgba(224,30,55,.3)}
+.btn-red{background:linear-gradient(180deg,#b31224,#7a0e1e);border-color:#c41630;color:#fff}
+.hero .tagline{margin-top:44px;font-size:10px;letter-spacing:.3em;color:var(--dim);text-transform:uppercase}
+section{padding:90px 40px;max-width:1200px;margin:0 auto}
+.sec-head{display:flex;align-items:center;gap:18px;margin-bottom:40px}
+.sec-head .bar{width:56px;height:2px;background:var(--red);box-shadow:0 0 12px rgba(224,30,55,.6)}
+.sec-head h2{font-family:'Cinzel',serif;font-weight:900;font-size:26px;letter-spacing:.24em;text-transform:uppercase}
+.sec-head .num{font-size:11px;color:var(--dim);letter-spacing:.3em}
+.grid{display:grid;gap:20px}
+.g2{grid-template-columns:repeat(auto-fit,minmax(300px,1fr))}
+.g3{grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}
+.card{background:var(--panel);border:1px solid var(--line);padding:26px;position:relative;transition:all .25s}
+.card::before{content:"";position:absolute;top:-1px;left:-1px;width:12px;height:12px;border-top:2px solid var(--red);border-left:2px solid var(--red)}
+.card:hover{transform:translateY(-4px);border-color:var(--line2);box-shadow:0 14px 40px rgba(0,0,0,.5)}
+.card h3{font-family:'Cinzel',serif;font-size:14px;letter-spacing:.2em;color:var(--red2);margin-bottom:12px;text-transform:uppercase}
+.card p{font-size:12px;line-height:1.8;color:var(--steel)}
+.shots{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:20px}
+.shot{border:1px solid var(--line);position:relative;overflow:hidden;background:var(--panel)}
+.shot img{width:100%;display:block;transition:transform .4s}
+.shot:hover img{transform:scale(1.03)}
+.shot .cap{position:absolute;bottom:0;left:0;right:0;padding:26px 16px 12px;background:linear-gradient(transparent,rgba(5,5,7,.92));font-size:10px;letter-spacing:.24em;color:var(--bone);text-transform:uppercase}
+.renders{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:18px}
+.renders img{width:100%;border:1px solid var(--line);transition:all .3s}
+.renders img:hover{border-color:var(--red3);box-shadow:0 0 24px rgba(224,30,55,.2)}
+.video-wrap{position:relative;padding-top:56.25%;border:1px solid var(--line2);background:#000}
+.video-wrap video{position:absolute;inset:0;width:100%;height:100%}
+.team{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:20px}
+.member{border:1px solid var(--line);padding:26px;text-align:center;background:var(--panel)}
+.member .avatar{width:74px;height:74px;border-radius:50%;border:2px solid var(--red3);display:flex;align-items:center;justify-content:center;margin:0 auto 14px;font-family:'Cinzel',serif;font-size:24px;color:var(--red2);background:radial-gradient(circle at 30% 30%,#161624,#07070c)}
+.member .name{font-family:'Cinzel',serif;font-weight:700;letter-spacing:.16em;font-size:14px;text-transform:uppercase}
+.member .role{font-size:10px;letter-spacing:.26em;color:var(--dim);margin-top:8px;text-transform:uppercase}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:16px;margin-top:40px}
+.stat{border:1px solid var(--line);padding:22px;text-align:center;background:linear-gradient(180deg,var(--panel),var(--bg2))}
+.stat .v{font-family:'Cinzel',serif;font-weight:900;font-size:34px;color:var(--red2)}
+.stat .l{font-size:9px;letter-spacing:.24em;color:var(--dim);margin-top:8px;text-transform:uppercase}
+footer{border-top:1px solid var(--line);padding:40px;text-align:center;font-size:10px;letter-spacing:.3em;color:var(--dim);text-transform:uppercase}
+footer .sigil{width:44px;height:44px;margin:0 auto 14px;opacity:.7}
+footer b{color:var(--steel)}
+</style>
+</head>
+<body>
+<div class="scan"></div>
+
+<nav>
+  <div class="brand">
+    <svg viewBox="0 0 100 100"><path d="M50 3 61 24 84 16 76 39 97 50 76 61 84 84 61 76 50 97 39 76 16 84 24 61 3 50 24 39 16 16 39 24z" fill="none" stroke="#e01e37" stroke-width="3"/><circle cx="50" cy="50" r="14" fill="none" stroke="#e8e4d8" stroke-width="3"/><circle cx="50" cy="50" r="6" fill="#e01e37"/></svg>
+    <span>OBSIDIAN</span>
+  </div>
+  <div>
+    <a href="#project">Project</a>
+    <a href="#product">Product</a>
+    <a href="#design">Design</a>
+    <a href="#renders">3D</a>
+    <a href="#film">Film</a>
+    <a href="#team">Team</a>
+  </div>
+</nav>
+
+<div class="hero">
+  <div class="stars" id="stars"></div>
+  <svg class="emblem" viewBox="0 0 100 100"><defs><radialGradient id="g"><stop offset="0" stop-color="#ff2a44"/><stop offset="70%" stop-color="#7a0e1e"/><stop offset="100%" stop-color="#2a050c"/></radialGradient></defs><path d="M50 3 61 24 84 16 76 39 97 50 76 61 84 84 61 76 50 97 39 76 16 84 24 61 3 50 24 39 16 16 39 24z" fill="url(#g)" stroke="#e01e37" stroke-width="1.5"/><circle cx="50" cy="50" r="14" fill="none" stroke="#e8e4d8" stroke-width="2"/><circle cx="50" cy="50" r="6" fill="#e01e37"/></svg>
+  <h1>OBSIDIAN</h1>
+  <div class="sub">Imperial Security Network</div>
+  <div class="line"></div>
+  <p style="max-width:640px;font-size:13px;line-height:2;color:var(--steel)">A classified command portal for the post-Order-66 hunt — galaxy tracking, target dossiers, operations dispatch, counter-recruitment propaganda, and Inquisitor comms. Built for TS '26 Creative Prelims.</p>
+  <div class="cta">
+    <a class="btn btn-red" href="#product">Explore the Portal</a>
+    <a class="btn" href="#film">Watch the Film</a>
+  </div>
+  <div class="tagline">Passphrase: FOR THE EMPIRE · Operative N-771 · Clearance Alpha-7</div>
+</div>
+
+<section id="project">
+  <div class="sec-head"><div class="bar"></div><h2>The Project</h2><span class="num">01</span></div>
+  <div class="grid g2">
+    <div class="card"><h3>Brief</h3><p>Post-Order 66, the Empire lacks coordination. OBSIDIAN answers the brief's Empire path: global tracking, planning, and communication — plus our own layer: disrupting Jedi recruitment through propaganda and loyalty enforcement.</p></div>
+    <div class="card"><h3>Our Spin</h3><p>Every feature is demoable live: radar sweeps, probe drops, drag-and-drop operation dispatch, a broadcast studio that composes sector-wide propaganda, and six original Inquisitor characters who reply in-character.</p></div>
+    <div class="card"><h3>Originality</h3><p>No canon characters, no templates, no borrowed assets. Nine original Jedi, ten original sectors, original sigil system, original lore documents, original raytracing engine, original score.</p></div>
+    <div class="card"><h3>Tech</h3><p>Vanilla HTML/CSS/JS web app — offline-first, self-hosted fonts, zero external calls. Custom vectorized Python raytracer for 3D. Synthesized audio. Headless-browser-driven film production.</p></div>
+  </div>
+</section>
+
+<section id="product">
+  <div class="sec-head"><div class="bar"></div><h2>The Product</h2><span class="num">02</span></div>
+  <p style="font-size:12px;color:var(--steel);margin-bottom:30px;line-height:1.9">Nine command modules inside one classified terminal. Below: live captures from the real app.</p>
+  <div class="shots">
+    <div class="shot"><img src="promo/shot-command.png" alt="Command Deck"><div class="cap">Command Deck — Sector Threat Index</div></div>
+    <div class="shot"><img src="promo/shot-tracker.png" alt="Galaxy Tracker"><div class="cap">Galaxy Tracker — Live Radar Sweep</div></div>
+    <div class="shot"><img src="promo/shot-dossiers.png" alt="Wanted Dossiers"><div class="cap">Wanted Dossiers — 9 Original Targets</div></div>
+    <div class="shot"><img src="promo/shot-ops.png" alt="Operations Board"><div class="cap">Operations Board — Drag & Dispatch</div></div>
+    <div class="shot"><img src="promo/shot-intel.png" alt="Intelligence"><div class="cap">Intelligence Feed — Probe Reports</div></div>
+    <div class="shot"><img src="promo/shot-interdiction.png" alt="Interdiction"><div class="cap">Interdiction — Broadcast Studio</div></div>
+    <div class="shot"><img src="promo/shot-comms.png" alt="Comms"><div class="cap">Inquisitor Uplink — Encrypted</div></div>
+    <div class="shot"><img src="promo/shot-archive.png" alt="Archive"><div class="cap">Imperial Archive — Lore Documents</div></div>
+  </div>
+  <div class="stats">
+    <div class="stat"><div class="v">9</div><div class="l">Jedi Targets</div></div>
+    <div class="stat"><div class="v">10</div><div class="l">Sectors</div></div>
+    <div class="stat"><div class="v">6</div><div class="l">Inquisitors</div></div>
+    <div class="stat"><div class="v">7</div><div class="l">Lore Documents</div></div>
+    <div class="stat"><div class="v">100+</div><div class="l">Intel Reports</div></div>
+    <div class="stat"><div class="v">0</div><div class="l">External Calls</div></div>
+  </div>
+</section>
+
+<section id="design">
+  <div class="sec-head"><div class="bar"></div><h2>UI / UX — Iron Protocol</h2><span class="num">03</span></div>
+  <div class="grid g2">
+    <div class="card"><h3>Design System</h3><p>The app ships its own 'Imperial Standards' page: 14 color tokens, 3 font families (Cinzel display, Rajdhani UI, Plex Mono data), component specs, motion tokens, and voice guidelines — judges can open it live inside the product.</p></div>
+    <div class="card"><h3>Experience</h3><p>Boot sequence with passphrase gate sets the fiction in the first 3 seconds. Scanlines, CRT vignette, radar sweeps, pulsing blips, typewriter broadcasts — every motion reinforces surveillance and inevitability.</p></div>
+  </div>
+  <div class="shots" style="grid-template-columns:repeat(auto-fit,minmax(380px,1fr));margin-top:20px">
+    <div class="shot"><img src="promo/shot-standards.png" alt="Standards"><div class="cap">Imperial Standards — Design System In-App</div></div>
+    <div class="shot"><img src="promo/shot-boot.png" alt="Boot"><div class="cap">Boot Sequence — Classified Entry</div></div>
+  </div>
+</section>
+
+<section id="renders">
+  <div class="sec-head"><div class="bar"></div><h2>3D Renders — Custom Engine</h2><span class="num">04</span></div>
+  <p style="font-size:12px;color:var(--steel);margin-bottom:30px;line-height:1.9">Six scenes rendered with a vectorized raytracer we wrote from scratch — spheres, boxes, cylinders, glow shells, reflections, starfields, and vignette grading. No external 3D software.</p>
+  <div class="renders">
+    <div><img src="renders/sigil.png" alt="Obsidian Sigil"><p style="font-size:10px;letter-spacing:.2em;color:var(--dim);margin-top:8px;text-align:center">THE SIGIL — 12 BLADES</p></div>
+    <div><img src="renders/warship.png" alt="Warship"><p style="font-size:10px;letter-spacing:.2em;color:var(--dim);margin-top:8px;text-align:center">WARSHIP — IRON HARVEST</p></div>
+    <div><img src="renders/helmet.png" alt="Helmet"><p style="font-size:10px;letter-spacing:.2em;color:var(--dim);margin-top:8px;text-align:center">HELMET — THE HOUND</p></div>
+    <div><img src="renders/planet.png" alt="Planet"><p style="font-size:10px;letter-spacing:.2em;color:var(--dim);margin-top:8px;text-align:center">PLANET — RINGED WORLD</p></div>
+    <div><img src="renders/probe.png" alt="Probe"><p style="font-size:10px;letter-spacing:.2em;color:var(--dim);margin-top:8px;text-align:center">PROBE — ALL-SEEING EYE</p></div>
+    <div><img src="renders/throne.png" alt="Throne"><p style="font-size:10px;letter-spacing:.2em;color:var(--dim);margin-top:8px;text-align:center">THRONE — THE EMPEROR'S SEAT</p></div>
+  </div>
+</section>
+
+<section id="film">
+  <div class="sec-head"><div class="bar"></div><h2>The Film</h2><span class="num">05</span></div>
+  <p style="font-size:12px;color:var(--steel);margin-bottom:30px;line-height:1.9">62 seconds. Original score, original voiceover, real app footage, 3D renders, kinetic title cards — all assembled with our own pipeline.</p>
+  <div class="video-wrap">
+    <video controls poster="video/card-obsidian.png">
+      <source src="video/OBSIDIAN-PROMO.mp4" type="video/mp4">
+    </video>
+  </div>
+</section>
+
+<section id="team">
+  <div class="sec-head"><div class="bar"></div><h2>The Team</h2><span class="num">06</span></div>
+  <div class="team">
+    <div class="member"><div class="avatar">N</div><div class="name">Name Here</div><div class="role">Role — Ideation · Product</div></div>
+    <div class="member"><div class="avatar">N</div><div class="name">Name Here</div><div class="role">Role — Design · Media</div></div>
+    <div class="member"><div class="avatar">N</div><div class="name">Name Here</div><div class="role">Role — Engineering · Pitch</div></div>
+  </div>
+</section>
+
+<footer>
+  <svg class="sigil" viewBox="0 0 100 100"><path d="M50 3 61 24 84 16 76 39 97 50 76 61 84 84 61 76 50 97 39 76 16 84 24 61 3 50 24 39 16 16 39 24z" fill="none" stroke="#e01e37" stroke-width="2"/><circle cx="50" cy="50" r="12" fill="none" stroke="#e8e4d8" stroke-width="2"/><circle cx="50" cy="50" r="5" fill="#e01e37"/></svg>
+  <div><b>OBSIDIAN</b> · TS '26 CREATIVE PRELIMS · THE HUNT NEVER ENDS</div>
+</footer>
+
+<script>
+const stars = document.getElementById('stars');
+for (let i = 0; i < 160; i++){
+  const s = document.createElement('span');
+  s.style.left = Math.random()*100 + '%';
+  s.style.top = Math.random()*100 + '%';
+  s.style.animationDelay = (Math.random()*4) + 's';
+  s.style.width = s.style.height = (Math.random() < .85 ? 1 : 2) + 'px';
+  stars.appendChild(s);
+}
+</script>
+</body>
+</html>
