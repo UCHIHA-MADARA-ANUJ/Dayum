@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>OBSIDIAN — Project Dossier</title>
+<style>
+@font-face{font-family:'Cinzel';src:url('file:///home/user/Dayum/obsidian-command/app/fonts/cinzel-latin-900-normal.woff2') format('woff2');font-weight:900}
+@font-face{font-family:'Cinzel';src:url('file:///home/user/Dayum/obsidian-command/app/fonts/cinzel-latin-700-normal.woff2') format('woff2');font-weight:700}
+@font-face{font-family:'Cinzel';src:url('file:///home/user/Dayum/obsidian-command/app/fonts/cinzel-latin-400-normal.woff2') format('woff2');font-weight:400}
+@font-face{font-family:'PlexMono';src:url('file:///home/user/Dayum/obsidian-command/app/fonts/ibm-plex-mono-latin-400-normal.woff2') format('woff2');font-weight:400}
+@font-face{font-family:'PlexMono';src:url('file:///home/user/Dayum/obsidian-command/app/fonts/ibm-plex-mono-latin-700-normal.woff2') format('woff2');font-weight:700}
+@page{size:A4;margin:0}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+body{font-family:'PlexMono',monospace;color:#e8e4d8;background:#050507;font-size:10.5px;line-height:1.7}
+.sheet{width:210mm;min-height:297mm;padding:16mm 17mm;position:relative;page-break-after:always;background:#050507;overflow:hidden}
+.sheet:last-child{page-break-after:auto}
+/* header band */
+.hband{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #1e1e2e;padding-bottom:9px;margin-bottom:22px}
+.hband .l{font-family:'Cinzel',serif;font-weight:700;font-size:12px;letter-spacing:.24em;color:#e8e4d8}
+.hband .l b{color:#e01e37}
+.hband .r{font-size:7.5px;letter-spacing:.22em;color:#5a5a66;text-transform:uppercase}
+/* headings */
+h1{font-family:'Cinzel',serif;font-weight:900;font-size:26px;letter-spacing:.14em;text-transform:uppercase;color:#e8e4d8;line-height:1.15}
+h1 .accent{color:#ff2a44}
+h2{font-family:'Cinzel',serif;font-weight:700;font-size:15px;letter-spacing:.2em;text-transform:uppercase;color:#e8e4d8;margin:24px 0 10px}
+h2::before{content:"// ";color:#e01e37}
+h3{font-family:'Cinzel',serif;font-weight:700;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:#ff2a44;margin:14px 0 6px}
+p{margin-bottom:9px;color:#90909c}
+p.hi{color:#e8e4d8;font-size:11px}
+.red{color:#ff2a44}
+.amber{color:#f4a300}
+.green{color:#3ddc84}
+.ice{color:#9fb4d8}
+.dim{color:#5a5a66}
+/* rule */
+.rule{height:1px;background:linear-gradient(90deg,#e01e37,transparent);margin:14px 0;border:none}
+/* boxes */
+.box{border:1px solid #1e1e2e;background:#0b0b12;padding:13px 15px;margin-bottom:12px;position:relative}
+.box.tl{border-top:2px solid #e01e37}
+.box .t{font-family:'Cinzel',serif;font-weight:700;font-size:10px;letter-spacing:.18em;color:#e8e4d8;text-transform:uppercase;margin-bottom:6px;display:block}
+.box .t i{color:#e01e37;font-style:normal}
+/* tables */
+table{width:100%;border-collapse:collapse;margin:8px 0 14px;font-size:9px}
+th{font-family:'Cinzel',serif;font-weight:700;font-size:8.5px;letter-spacing:.16em;text-transform:uppercase;color:#ff2a44;text-align:left;padding:7px 8px;border-bottom:2px solid #e01e37;background:#0a0a11}
+td{padding:7px 8px;border-bottom:1px solid #1c1c2a;color:#90909c;vertical-align:top}
+td b{color:#e8e4d8;font-weight:400}
+tr:nth-child(even) td{background:#09090f}
+/* chips */
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 12px}
+.chip{border:1px solid #2b2b3f;color:#9fb4d8;padding:4px 10px;font-size:8.5px;letter-spacing:.12em;text-transform:uppercase}
+.chip.red{border-color:#7a0e1e;color:#ff2a44}
+.chip.green{border-color:#155a33;color:#3ddc84}
+.chip.amber{border-color:#6b4a08;color:#f4a300}
+/* list */
+ul{margin:4px 0 12px 16px;color:#90909c}
+li{margin-bottom:5px}
+li b{color:#e8e4d8;font-weight:400}
+/* cover */
+.cover{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;min-height:297mm;padding:20mm}
+.cover .emblem{width:78mm;height:78mm;margin-bottom:10mm;filter:drop-shadow(0 0 8mm rgba(224,30,55,.5))}
+.cover h1{font-size:34px;letter-spacing:.34em;text-indent:.34em}
+.cover .sub{font-size:9px;letter-spacing:.4em;text-indent:.4em;color:#8a8a94;margin-top:6mm;text-transform:uppercase}
+.cover .line{width:70mm;height:1px;background:linear-gradient(90deg,transparent,#e01e37,transparent);margin:12mm auto}
+.cover .meta{font-size:8px;letter-spacing:.26em;color:#5a5a66;text-transform:uppercase;line-height:2.4}
+.cover .foot{position:absolute;bottom:14mm;left:0;right:0;font-size:7px;letter-spacing:.3em;color:#3a3a46;text-transform:uppercase}
+/* two-col */
+.cols{display:flex;gap:12px}
+.cols>div{flex:1}
+/* stat strip */
+.stats{display:flex;gap:1px;background:#1e1e2e;border:1px solid #1e1e2e;margin:10px 0 14px}
+.stats>div{flex:1;background:#0b0b12;padding:10px 8px;text-align:center}
+.stats .v{font-family:'Cinzel',serif;font-weight:900;font-size:19px;color:#ff2a44}
+.stats .l{font-size:6.8px;letter-spacing:.18em;color:#5a5a66;text-transform:uppercase;margin-top:4px}
+/* steps */
+.step{display:flex;gap:10px;margin-bottom:8px}
+.step .n{width:16px;height:16px;flex-shrink:0;border:1px solid #e01e37;color:#ff2a44;font-size:8px;display:flex;align-items:center;justify-content:center;margin-top:2px}
+.step .t{color:#90909c;font-size:9.5px}
+.step .t b{color:#e8e4d8;font-weight:400}
+/* quote */
+.quote{border-left:3px solid #e01e37;background:#0b0b12;padding:12px 15px;margin:12px 0;color:#c9c5b8;font-size:10px;font-style:italic}
+.quote .who{display:block;margin-top:6px;font-style:normal;font-size:8px;letter-spacing:.2em;color:#ff2a44;text-transform:uppercase}
+/* pagination */
+.pg{position:absolute;bottom:12mm;left:0;right:0;text-align:center;font-size:7px;letter-spacing:.3em;color:#3a3a46;text-transform:uppercase}
+</style>
+</head>
+<body>
+
+<!-- ═══════════ COVER ═══════════ -->
+<div class="sheet" style="background:radial-gradient(ellipse at 50% 38%,#0c0c1a 0%,#050507 72%)">
+  <svg class="emblem" viewBox="0 0 100 100"><defs><radialGradient id="g" cx="50%" cy="50%" r="60%"><stop offset="0%" stop-color="#ff2a44"/><stop offset="70%" stop-color="#7a0e1e"/><stop offset="100%" stop-color="#2a050c"/></radialGradient></defs><path d="M50 3 61 24 84 16 76 39 97 50 76 61 84 84 61 76 50 97 39 76 16 84 24 61 3 50 24 39 16 16 39 24z" fill="url(#g)" stroke="#e01e37" stroke-width="1.5"/><circle cx="50" cy="50" r="16" fill="none" stroke="#e8e4d8" stroke-width="2"/><circle cx="50" cy="50" r="7" fill="#e01e37"/></svg>
+  <h1>OBSIDIAN</h1>
+  <div class="sub">Imperial Security Network</div>
+  <div class="line"></div>
+  <div class="meta">Project Dossier · TS '26 Creative Prelims<br>Path 2 — The Empire · Jedi Apprehension Division<br>ANUJ PHULERA · AARAV CHOUDHARY · JEEHAAN KWATRA<br>School: ______________</div>
+  <div class="foot">THE HUNT NEVER ENDS · PASS PHRASE: FOR THE EMPIRE</div>
+</div>
+
+<!-- ═══════════ 01 THE IDEA ═══════════ -->
+<div class="sheet">
+  <div class="hband"><div class="l">OBSIDIAN <b>·</b> DOSSIER</div><div class="r">Section 01 · The Idea</div></div>
+  <h1>The <span class="accent">Idea</span></h1>
+  <div class="rule"></div>
+  <div class="box tl"><span class="t"><i>◈</i> 100-Word Summary</span>
+    <p class="hi">The Jedi are scattered, but not extinct. OBSIDIAN is a classified Imperial command portal that fuses a disorganized purge into a single hunting organism: a live galaxy tracker with probe drops, wanted dossiers with psychoprofiles, a kanban operations board, intelligence that escalates into hunts, a propaganda studio that disrupts Jedi recruitment, and encrypted Inquisitor comms. Built as a fully original, offline-first web app with its own design system, custom 3D renders from a self-written raytracer, and a 62-second trailer with an original score — the hunt, finally coordinated.</p>
+  </div>
+  <h2>Why This Wins</h2>
+  <div class="cols">
+    <div>
+      <div class="box"><span class="t">Functionality</span>Every module is live and demoable — radar sweeps, drag-drop dispatch, a working terminal, chat that replies. Judges don't read about the app; they operate it.</div>
+      <div class="box"><span class="t">UI/UX</span>One cinematic design system — "Iron Protocol" — with a gate, boot sequence, scramble typography, and a full in-app standards page.</div>
+    </div>
+    <div>
+      <div class="box"><span class="t">Aesthetic</span>Obsidian black, imperial red, serif display type, scanline-free clean surfaces. Feels institutional and inevitable.</div>
+      <div class="box"><span class="t">Originality</span>Zero canon characters, zero templates: nine original Jedi, ten sectors, six Inquisitors, seven lore documents, an original raytracing engine, an original score.</div>
+    </div>
+  </div>
+  <div class="stats">
+    <div><div class="v">9</div><div class="l">Jedi Targets</div></div>
+    <div><div class="v">10</div><div class="l">Sectors</div></div>
+    <div><div class="v">6</div><div class="l">Inquisitors</div></div>
+    <div><div class="v">12</div><div class="l">Modules</div></div>
+    <div><div class="v">62s</div><div class="l">Trailer</div></div>
+    <div><div class="v">8</div><div class="l">3D Scenes</div></div>
+  </div>
+  <div class="pg">OBSIDIAN · SECTION 01</div>
+</div>
+
+<!-- ═══════════ 02 THE PROBLEM ═══════════ -->
+<div class="sheet">
+  <div class="hband"><div class="l">OBSIDIAN <b>·</b> DOSSIER</div><div class="r">Section 02 · The Problem</div></div>
+  <h1>The <span class="accent">Problem</span></h1>
+  <div class="rule"></div>
+  <div class="quote">"Order 66 has fallen. Hundreds of survivors hide across a thousand worlds. They are rebuilding. They are recruiting. They are learning to vanish. The Empire has legions, but no eyes."
+    <span class="who">— THE BRIEF · PATH 2</span>
+  </div>
+  <p>After the purge, the Empire's coordination collapsed:</p>
+  <table>
+    <tr><th>Failure</th><th>Consequence</th></tr>
+    <tr><td><b>Fragmented intel</b></td><td>Each sector files reports into a void — no single picture of the galaxy.</td></tr>
+    <tr><td><b>Isolated Inquisitors</b></td><td>Six hunters, six separate hunts. No shared channel, no joint doctrine.</td></tr>
+    <tr><td><b>Unprotected recruitment lanes</b></td><td>The Jedi recruit through refugee networks, and nothing intercepts them.</td></tr>
+    <tr><td><b>No decision layer</b></td><td>Intel never becomes action: sightings sit in ledgers while targets slip away.</td></tr>
+  </table>
+  <h2>The Opportunity</h2>
+  <p>The brief grants total creative freedom. We built the nervous system the Empire never had — a single classified network where <span class="red">every sector, every probe, and every citizen becomes a sensor in the Emperor's hand</span>.</p>
+  <div class="pg">OBSIDIAN · SECTION 02</div>
+</div>
+
+<!-- ═══════════ 03 THE SOLUTION ═══════════ -->
+<div class="sheet">
+  <div class="hband"><div class="l">OBSIDIAN <b>·</b> DOSSIER</div><div class="r">Section 03 · The Solution</div></div>
+  <h1>The <span class="accent">Solution</span></h1>
+  <div class="rule"></div>
+  <p class="hi">OBSIDIAN is a classified Imperial command portal. One login. Twelve modules. A complete hunting organism.</p>
+  <table>
+    <tr><th style="width:22%">Module</th><th style="width:52%">What it does</th><th>Demo hook</th></tr>
+    <tr><td><b>Command Deck</b></td><td>Hero status board: live HUD, manifesto preview, module ecosystem, hunt metrics, ticker.</td><td>First screen, giant type</td></tr>
+    <tr><td><b>Galaxy Tracker</b></td><td>Radar map of 10 sectors with threat heat, probe drops, sighting log.</td><td>Click a blip → dossier</td></tr>
+    <tr><td><b>Wanted Dossiers</b></td><td>Nine original Jedi with psychoprofiles; printable warrants.</td><td>Open "The Ember"</td></tr>
+    <tr><td><b>Intelligence</b></td><td>Probe/ISB feed with redaction, confirmation, escalation.</td><td>Escalate → op created</td></tr>
+    <tr><td><b>Operations</b></td><td>Kanban hunt board: plan → active → contained → failed.</td><td>Drag a card</td></tr>
+    <tr><td><b>Interdiction</b></td><td>Propaganda studio: compose + transmit sector-wide broadcasts.</td><td>Transmit to Torvane</td></tr>
+    <tr><td><b>Inquisitor Uplink</b></td><td>Encrypted chat with six original Inquisitors who reply in-character.</td><td>Message "The Hound"</td></tr>
+    <tr><td><b>Imperial Archive</b></td><td>Seven lore documents — Directive 66, the Doctrine, psychoprofiles.</td><td>Open Directive 66</td></tr>
+    <tr><td><b>Terminal</b></td><td>Working shell with a filesystem: help, ls, cd, cat, scan, locate, ping.</td><td>Type <span class="red">cat targets.log</span></td></tr>
+    <tr><td><b>Manifesto</b></td><td>The Emperor's case against the Order — scramble-revealed prose.</td><td>Scramble animation</td></tr>
+    <tr><td><b>Hunt Metrics</b></td><td>Purge completion bar, giant count-up statistics.</td><td>Watch 11% fill</td></tr>
+    <tr><td><b>Imperial Standards</b></td><td>The in-app design system: color, type, components, motion.</td><td>Judges' favorite</td></tr>
+  </table>
+  <p><span class="amber">Access model:</span> passphrase gate (<span class="red">FOR THE EMPIRE</span>) → typed boot sequence → clearance ALPHA-7 → full network.</p>
+  <div class="pg">OBSIDIAN · SECTION 03</div>
+</div>
+
+<!-- ═══════════ 04 TECHNOLOGY ═══════════ -->
+<div class="sheet">
+  <div class="hband"><div class="l">OBSIDIAN <b>·</b> DOSSIER</div><div class="r">Section 04 · Technology</div></div>
+  <h1>Architecture &amp; <span class="accent">Technology</span></h1>
+  <div class="rule"></div>
+  <h3>Primary build — Next.js 15</h3>
+  <div class="chips">
+    <span class="chip">Next.js 15</span><span class="chip">React 19</span><span class="chip">Framer Motion</span><span class="chip">GSAP</span><span class="chip">Lenis</span><span class="chip">Three.js</span><span class="chip">Zustand</span><span class="chip">Tailwind</span><span class="chip">Sonner</span><span class="chip">Lucide</span>
+  </div>
+  <div class="cols">
+    <div>
+      <div class="box"><span class="t">3D — Custom Raytracer</span>All 3D renders come from a vectorized numpy raytracer written from scratch: spheres, boxes, cylinders, glow shells, reflections, starfields, tonemapping and vignette grading. Eight scenes, zero external 3D software.</div>
+      <div class="box"><span class="t">Audio — Synthesized</span>The film score ("Iron Protocol") and every UI sound are generated with code — WebAudio oscillators and WAV synthesis. No licensed tracks anywhere.</div>
+    </div>
+    <div>
+      <div class="box"><span class="t">Film — Built by Pipeline</span>The 62-second trailer assembles 3D renders, real app footage (recorded via headless browser), title cards and a voiceover through an ffmpeg conductor script. Fully reproducible.</div>
+      <div class="box"><span class="t">Security Model</span>Passphrase gate with incident logging on failure, offline-first operation, self-hosted fonts, zero external calls. The interface itself is the threat theater.</div>
+    </div>
+  </div>
+  <h3>Fallback build</h3>
+  <p>A zero-dependency vanilla HTML/CSS/JS version ships alongside the Next.js app — the product runs from a single folder on any static host, anywhere, forever.</p>
+  <h3>Deployment</h3>
+  <p><span class="green">One click to Vercel:</span> the web/ folder is a standard Next.js project; import from GitHub and it deploys in minutes with a shareable judge link.</p>
+  <div class="pg">OBSIDIAN · SECTION 04</div>
+</div>
+
+<!-- ═══════════ 05 ORIGINALITY ═══════════ -->
+<div class="sheet">
+  <div class="hband"><div class="l">OBSIDIAN <b>·</b> DOSSIER</div><div class="r">Section 05 · Originality</div></div>
+  <h1>World-Building &amp; <span class="accent">Originality</span></h1>
+  <div class="rule"></div>
+  <p class="hi">Nothing in OBSIDIAN references canon. Every name, doctrine and glyph is original to our universe.</p>
+  <table>
+    <tr><th style="width:30%">Asset</th><th>Detail</th></tr>
+    <tr><td><b>Solenne Kade — "The Ember"</b></td><td>Former master of the Torvane enclave. Thermal projection. Will fight to the death. Reward 500,000.</td></tr>
+    <tr><td><b>Seraphine Nyx — "The Shade"</b></td><td>Killed two Inquisitors. Shadow melding. The Empire's highest-priority disruption target.</td></tr>
+    <tr><td><b>Idris Vale — "The Archivist"</b></td><td>Emptied the archives before the purge. The Emperor wants him intact.</td></tr>
+    <tr><td><b>Ten Sectors</b></td><td>Torvane, Myrrah, Velaros, Ostrak, Hearth, Kess, Bellhaven, Nyxaris, Dorn, Valdris — each with garrison, threat index and intel.</td></tr>
+    <tr><td><b>Six Inquisitors</b></td><td>The Hound, The Surgeon, The Zealot, The Whisper, The Hammer, The Calculator — each with dialogue.</td></tr>
+    <tr><td><b>Seven Documents</b></td><td>Directive 66, Exile Protocol, On the Jedi Sects, Emperor's Address, the Doctrine, the Inquisitor's Manual, Psychoprofile.</td></tr>
+    <tr><td><b>The Sigil</b></td><td>Twelve blades around the all-seeing core — drawn as pure SVG, used across app, posters, deck and film.</td></tr>
+  </table>
+  <h3>Everything is ours</h3>
+  <ul>
+    <li><b>Code:</b> vanilla or Next.js, written from scratch — no templates, no boilerplate clones.</li>
+    <li><b>Graphics:</b> SVG emblem system, procedural posters, canvas galaxy, raytraced scenes.</li>
+    <li><b>Sound:</b> synthesized score and UI audio — original composition.</li>
+    <li><b>Film:</b> original voiceover, original edit, original motion design.</li>
+  </ul>
+  <div class="pg">OBSIDIAN · SECTION 05</div>
+</div>
+
+<!-- ═══════════ 06 DEMO ═══════════ -->
+<div class="sheet">
+  <div class="hband"><div class="l">OBSIDIAN <b>·</b> DOSSIER</div><div class="r">Section 06 · Demo Script</div></div>
+  <h1>The <span class="accent">3-Minute Demo</span></h1>
+  <div class="rule"></div>
+  <p class="hi">Passphrase: <span class="red">FOR THE EMPIRE</span> · Operative N-771 · Clearance ALPHA-7</p>
+  <div class="step"><div class="n">1</div><div class="t"><b>Gate</b> — "The Empire needs a nervous system. This is it." Click <b>INITIALIZE SEQUENCE</b>.</div></div>
+  <div class="step"><div class="n">2</div><div class="t"><b>Boot</b> — the terminal types system lines; enter the passphrase when prompted.</div></div>
+  <div class="step"><div class="n">3</div><div class="t"><b>Command Deck</b> — giant hero type, live HUD, module ecosystem. "Eleven modules. One hunt."</div></div>
+  <div class="step"><div class="n">4</div><div class="t"><b>Tracker</b> — click a blip. "A confirmed sighting of Solenne Kade — reward half a million."</div></div>
+  <div class="step"><div class="n">5</div><div class="t"><b>Dossiers → Ops</b> — open a target, file it to operations, drag the card to ACTIVE.</div></div>
+  <div class="step"><div class="n">6</div><div class="t"><b>Interdiction</b> — compose a broadcast, transmit to Torvane.</div></div>
+  <div class="step"><div class="n">7</div><div class="t"><b>Comms</b> — message Inquisitor Vex; he replies in-character.</div></div>
+  <div class="step"><div class="n">8</div><div class="t"><b>Terminal</b> — "This is the mainframe." Type <b>cat targets.log</b>, <b>scan kess</b>.</div></div>
+  <div class="step"><div class="n">9</div><div class="t"><b>Standards</b> — "Our design system lives inside the product." Close.</div></div>
+  <h2>Deliverable Index</h2>
+  <table>
+    <tr><th>#</th><th>Deliverable</th><th>Location</th></tr>
+    <tr><td><b>1</b></td><td>Write-up (≤100 words)</td><td>WRITEUP-options.md (this dossier, Section 01)</td></tr>
+    <tr><td><b>2</b></td><td>Product — OBSIDIAN portal</td><td>web/ (Next.js) · app/ (vanilla)</td></tr>
+    <tr><td><b>3</b></td><td>Pitch deck (no screenshots)</td><td>OBSIDIAN-PITCH-DECK.pptx</td></tr>
+    <tr><td><b>4</b></td><td>UI/UX design</td><td>OBSIDIAN-UX.pdf + in-app Standards module</td></tr>
+    <tr><td><b>5</b></td><td>Promo film (62s)</td><td>OBSIDIAN-PROMO.mp4</td></tr>
+    <tr><td><b>6</b></td><td>3D renders</td><td>renders/ (8 scenes, custom raytracer)</td></tr>
+    <tr><td><b>7</b></td><td>Bonus</td><td>Poster, banner, showcase site</td></tr>
+  </table>
+  <div class="pg">OBSIDIAN · SECTION 06 · THE HUNT NEVER ENDS</div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>OBSIDIAN — UI/UX Design System</title>
+<style>
+@font-face{font-family:'Cinzel';src:url('file:///home/user/Dayum/obsidian-command/app/fonts/cinzel-latin-900-normal.woff2') format('woff2');font-weight:900}
+@font-face{font-family:'Cinzel';src:url('file:///home/user/Dayum/obsidian-command/app/fonts/cinzel-latin-700-normal.woff2') format('woff2');font-weight:700}
+@font-face{font-family:'Cinzel';src:url('file:///home/user/Dayum/obsidian-command/app/fonts/cinzel-latin-400-normal.woff2') format('woff2');font-weight:400}
+@font-face{font-family:'Rajdhani';src:url('file:///home/user/Dayum/obsidian-command/app/fonts/rajdhani-latin-600-normal.woff2') format('woff2');font-weight:600}
+@font-face{font-family:'PlexMono';src:url('file:///home/user/Dayum/obsidian-command/app/fonts/ibm-plex-mono-latin-400-normal.woff2') format('woff2');font-weight:400}
+@page{size:A4;margin:0}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+body{font-family:'PlexMono',monospace;color:#e8e4d8;background:#050507;font-size:10px;line-height:1.65}
+.sheet{width:210mm;min-height:297mm;padding:16mm 17mm;position:relative;page-break-after:always;background:#050507;overflow:hidden}
+.hband{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #1e1e2e;padding-bottom:9px;margin-bottom:20px}
+.hband .l{font-family:'Cinzel',serif;font-weight:700;font-size:12px;letter-spacing:.24em}
+.hband .l b{color:#e01e37}
+.hband .r{font-size:7.5px;letter-spacing:.22em;color:#5a5a66;text-transform:uppercase}
+h1{font-family:'Cinzel',serif;font-weight:900;font-size:25px;letter-spacing:.14em;text-transform:uppercase;line-height:1.15}
+h1 .accent{color:#ff2a44}
+h2{font-family:'Cinzel',serif;font-weight:700;font-size:14px;letter-spacing:.2em;text-transform:uppercase;margin:22px 0 9px}
+h2::before{content:"// ";color:#e01e37}
+h3{font-family:'Cinzel',serif;font-weight:700;font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:#ff2a44;margin:13px 0 6px}
+p{margin-bottom:8px;color:#90909c}
+p.hi{color:#e8e4d8}
+.red{color:#ff2a44}.amber{color:#f4a300}.green{color:#3ddc84}.ice{color:#9fb4d8}.dim{color:#5a5a66}
+.rule{height:1px;background:linear-gradient(90deg,#e01e37,transparent);margin:13px 0;border:none}
+.box{border:1px solid #1e1e2e;background:#0b0b12;padding:12px 14px;margin-bottom:11px}
+.box .t{font-family:'Cinzel',serif;font-weight:700;font-size:9.5px;letter-spacing:.18em;text-transform:uppercase;display:block;margin-bottom:6px}
+.box .t i{color:#e01e37;font-style:normal}
+/* color swatches */
+.swatches{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:8px 0 14px}
+.sw{height:52px;border:1px solid #1e1e2e;padding:6px 7px;font-size:8px;display:flex;flex-direction:column;justify-content:flex-end;color:#fff;text-shadow:0 1px 3px #000;letter-spacing:.06em}
+.sw small{opacity:.8;font-size:7px}
+/* type specimens */
+.type{border-bottom:1px solid #1c1c2a;padding:10px 0}
+.type .lab{font-size:7.5px;letter-spacing:.18em;color:#5a5a66;text-transform:uppercase;margin-bottom:4px}
+.type .d{font-family:'Cinzel',serif;font-weight:900;font-size:26px;letter-spacing:.08em}
+.type .u{font-family:'Rajdhani',sans-serif;font-weight:600;font-size:16px;letter-spacing:.14em;text-transform:uppercase}
+.type .m{font-size:11px;letter-spacing:.14em;color:#90909c}
+/* live components */
+.comp{border:1px solid #1e1e2e;background:#0b0b12;padding:14px;margin-bottom:11px}
+.comp .row{display:flex;gap:9px;flex-wrap:wrap;align-items:center;margin-bottom:8px}
+.comp .row:last-child{margin-bottom:0}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border:1px solid #2b2b3f;background:#10101a;color:#e8e4d8;font-size:10px;letter-spacing:.14em;text-transform:uppercase}
+.btn.red{background:linear-gradient(180deg,#b31224,#7a0e1e);border-color:#c41630;color:#fff}
+.btn.ghost{background:transparent;color:#8a8a94}
+.btn.sm{padding:5px 11px;font-size:8.5px}
+.badge{display:inline-flex;padding:3px 8px;border:1px solid #2b2b3f;color:#8a8a94;font-size:8px;letter-spacing:.14em;text-transform:uppercase}
+.badge.red{border-color:#7a0e1e;color:#ff2a44;background:rgba(224,30,55,.08)}
+.badge.amber{border-color:#6b4a08;color:#f4a300;background:rgba(244,163,0,.07)}
+.badge.green{border-color:#155a33;color:#3ddc84;background:rgba(61,220,132,.06)}
+.stat{width:120px;border:1px solid #1e1e2e;background:linear-gradient(180deg,#0b0b12,#08080d);padding:11px 12px}
+.stat .v{font-family:'Cinzel',serif;font-weight:900;font-size:22px;color:#ff2a44}
+.stat .l{font-size:7px;letter-spacing:.2em;color:#5a5a66;text-transform:uppercase;margin-top:4px}
+.panelx{flex:1;min-width:150px;border:1px solid #1e1e2e;background:#0b0b12}
+.panelx .hd{padding:7px 10px;border-bottom:1px solid #1e1e2e;font-family:'Cinzel',serif;font-size:8.5px;letter-spacing:.16em;text-transform:uppercase}
+.panelx .bd{padding:9px 10px;font-size:8px;color:#90909c;line-height:1.7}
+.input{display:flex;gap:7px;align-items:center;border:1px solid #1e1e2e;background:#08080d;padding:8px 10px;width:220px}
+.input .prompt{color:#ff2a44;font-size:9px}
+.input .line{flex:1;height:8px;background:#161624;border-radius:1px}
+/* kanban mini */
+.kan{display:flex;gap:7px}
+.kan .col{flex:1;border:1px solid #1e1e2e;background:#08080d;padding:6px}
+.kan .col .hd{font-size:7px;letter-spacing:.14em;color:#5a5a66;text-transform:uppercase;margin-bottom:5px;border-bottom:1px solid #1e1e2e;padding-bottom:4px}
+.kan .card{border:1px solid #2b2b3f;background:#0b0b12;padding:6px 7px;margin-bottom:5px;font-size:7.5px;color:#90909c;border-left:3px solid #ff2a44}
+/* chat mini */
+.chat{display:flex;flex-direction:column;gap:6px}
+.chat .m{max-width:75%;border:1px solid #2b2b3f;background:#0b0b12;padding:7px 9px;font-size:8px;color:#e8e4d8;align-self:flex-start}
+.chat .m.mine{align-self:flex-end;border-color:#7a0e1e;background:rgba(224,30,55,.1)}
+/* terminal mini */
+.term{background:#05050b;border:1px solid #2b2b3f;padding:10px;font-size:8px;line-height:1.7;color:#8a8a94}
+.term .g{color:#3ddc84}.term .a{color:#f4a300}.term .r{color:#ff2a44}.term .i{color:#9fb4d8}
+/* flow diagram */
+.flow{display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin:8px 0 14px}
+.fnode{border:1px solid #2b2b3f;background:#0b0b12;padding:8px 12px;font-size:8px;letter-spacing:.1em;text-transform:uppercase;text-align:center;color:#8a8a94}
+.fnode.hot{border-color:#7a0e1e;color:#ff2a44;background:rgba(224,30,55,.07)}
+.farrow{color:#e01e37;font-size:10px}
+/* tables */
+table{width:100%;border-collapse:collapse;margin:7px 0 13px;font-size:8.5px}
+th{font-family:'Cinzel',serif;font-weight:700;font-size:8px;letter-spacing:.16em;text-transform:uppercase;color:#ff2a44;text-align:left;padding:6px 8px;border-bottom:2px solid #e01e37;background:#0a0a11}
+td{padding:6px 8px;border-bottom:1px solid #1c1c2a;color:#90909c;vertical-align:top}
+td b{color:#e8e4d8;font-weight:400}
+tr:nth-child(even) td{background:#09090f}
+/* cover */
+.cover{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;min-height:297mm;padding:20mm;background:radial-gradient(ellipse at 50% 38%,#0c0c1a 0%,#050507 72%)}
+.cover .emblem{width:72mm;height:72mm;margin-bottom:10mm;filter:drop-shadow(0 0 8mm rgba(224,30,55,.5))}
+.cover h1{font-size:30px;letter-spacing:.32em;text-indent:.32em}
+.cover .sub{font-size:8.5px;letter-spacing:.4em;text-indent:.4em;color:#8a8a94;margin-top:6mm;text-transform:uppercase}
+.cover .line{width:66mm;height:1px;background:linear-gradient(90deg,transparent,#e01e37,transparent);margin:11mm auto}
+.cover .meta{font-size:7.5px;letter-spacing:.26em;color:#5a5a66;text-transform:uppercase;line-height:2.4}
+.pg{position:absolute;bottom:12mm;left:0;right:0;text-align:center;font-size:7px;letter-spacing:.3em;color:#3a3a46;text-transform:uppercase}
+</style>
+</head>
+<body>
+
+<!-- COVER -->
+<div class="sheet">
+  <div class="cover">
+    <svg class="emblem" viewBox="0 0 100 100"><defs><radialGradient id="g" cx="50%" cy="50%" r="60%"><stop offset="0%" stop-color="#ff2a44"/><stop offset="70%" stop-color="#7a0e1e"/><stop offset="100%" stop-color="#2a050c"/></radialGradient></defs><path d="M50 3 61 24 84 16 76 39 97 50 76 61 84 84 61 76 50 97 39 76 16 84 24 61 3 50 24 39 16 16 39 24z" fill="url(#g)" stroke="#e01e37" stroke-width="1.5"/><circle cx="50" cy="50" r="16" fill="none" stroke="#e8e4d8" stroke-width="2"/><circle cx="50" cy="50" r="7" fill="#e01e37"/></svg>
+    <h1>IRON PROTOCOL</h1>
+    <div class="sub">UI/UX Design System · OBSIDIAN</div>
+    <div class="line"></div>
+    <div class="meta">TS '26 Creative Prelims · Imperial Security Network<br>Version 2.0 · 14 Color Tokens · 3 Type Families · 24 Components</div>
+  </div>
+</div>
+
+<!-- PRINCIPLES -->
+<div class="sheet">
+  <div class="hband"><div class="l">IRON <b>·</b> PROTOCOL</div><div class="r">01 · Principles</div></div>
+  <h1>Design <span class="accent">Principles</span></h1>
+  <div class="rule"></div>
+  <p class="hi">OBSIDIAN is not a dashboard. It is a piece of theater — an institutional interface that makes surveillance, order and inevitability feel tangible.</p>
+  <table>
+    <tr><th style="width:24%">Principle</th><th>How it shows up</th></tr>
+    <tr><td><b>I. Absolute tone</b></td><td>Short declarative copy. Data before adjectives. The Empire does not explain — it commands.</td></tr>
+    <tr><td><b>II. Depth, not clutter</b></td><td>One canvas galaxy behind everything; surfaces stay flat and legible. Nothing overlaps content.</td></tr>
+    <tr><td><b>III. Ritual entry</b></td><td>Gate → typed boot → passphrase → welcome. Entry is a ceremony, not a login form.</td></tr>
+    <tr><td><b>IV. Every pixel intentional</b></td><td>Corner brackets, hairline borders, red accents used only for action and alarm.</td></tr>
+    <tr><td><b>V. Motion with meaning</b></td><td>Scramble text = decryption. Count-ups = live telemetry. Magnetic buttons = the interface feels alive.</td></tr>
+    <tr><td><b>VI. Original by default</b></td><td>Every glyph, sigil and component is designed in-house — no icon packs, no templates.</td></tr>
+  </table>
+  <h2>Experience Map</h2>
+  <div class="flow">
+    <div class="fnode hot">GATE</div><span class="farrow">▶</span>
+    <div class="fnode">BOOT SEQUENCE</div><span class="farrow">▶</span>
+    <div class="fnode">PASSPHRASE</div><span class="farrow">▶</span>
+    <div class="fnode hot">COMMAND DECK</div><span class="farrow">▶</span>
+    <div class="fnode">12 MODULES</div>
+  </div>
+  <div class="pg">IRON PROTOCOL · 01</div>
+</div>
+
+<!-- COLOR -->
+<div class="sheet">
+  <div class="hband"><div class="l">IRON <b>·</b> PROTOCOL</div><div class="r">02 · Color</div></div>
+  <h1>Color <span class="accent">System</span></h1>
+  <div class="rule"></div>
+  <p class="hi">Obsidian black carries the void; imperial red is reserved for action, alarm and the hunt itself.</p>
+  <div class="swatches">
+    <div class="sw" style="background:#050507">#050507<small>Obsidian Black · Base</small></div>
+    <div class="sw" style="background:#0b0b12">#0b0b12<small>Panel</small></div>
+    <div class="sw" style="background:#10101a">#10101a<small>Panel Raised</small></div>
+    <div class="sw" style="background:#1e1e2e">#1e1e2e<small>Hairline</small></div>
+    <div class="sw" style="background:#2a2a3e">#2a2a3e<small>Hairline Hi</small></div>
+    <div class="sw" style="background:#e8e4d8;color:#0b0b12">#e8e4d8<small>Bone · Text</small></div>
+    <div class="sw" style="background:#8a8a94">#8a8a94<small>Steel · Secondary</small></div>
+    <div class="sw" style="background:#5a5a66">#5a5a66<small>Dim · Meta</small></div>
+    <div class="sw" style="background:#e01e37">#e01e37<small>Imperial Red · Action</small></div>
+    <div class="sw" style="background:#ff2a44">#ff2a44<small>Crimson Glow · Alert</small></div>
+    <div class="sw" style="background:#7a0e1e">#7a0e1e<small>Red Deep · Borders</small></div>
+    <div class="sw" style="background:#f4a300">#f4a300<small>Amber · Warning</small></div>
+    <div class="sw" style="background:#3ddc84">#3ddc84<small>Green · Positive</small></div>
+    <div class="sw" style="background:#9fb4d8">#9fb4d8<small>Ice · Data</small></div>
+  </div>
+  <table>
+    <tr><th>Role</th><th>Token</th><th>Usage rule</th></tr>
+    <tr><td><b>Background</b></td><td>--bg · --bg2</td><td>App canvas; sidebar &amp; topbar use 92% tint + blur</td></tr>
+    <tr><td><b>Action</b></td><td>--red · --red2</td><td>Primary buttons, active nav, confirmed intel, alerts</td></tr>
+    <tr><td><b>Warning</b></td><td>--amber</td><td>Threat badges, watch sectors, passphrase prompts</td></tr>
+    <tr><td><b>Positive</b></td><td>--green</td><td>Boot OK lines, contained ops, success toasts</td></tr>
+    <tr><td><b>Data</b></td><td>--ice</td><td>Intel source tags, mono metadata</td></tr>
+  </table>
+  <div class="pg">IRON PROTOCOL · 02</div>
+</div>
+
+<!-- TYPOGRAPHY -->
+<div class="sheet">
+  <div class="hband"><div class="l">IRON <b>·</b> PROTOCOL</div><div class="r">03 · Typography</div></div>
+  <h1>Typography <span class="accent">System</span></h1>
+  <div class="rule"></div>
+  <p class="hi">Three families, three jobs: Cinzel commands, Rajdhani operates, PlexMono reports.</p>
+  <div class="type"><div class="lab">Cinzel 900 · Display · 40–120px</div><div class="d">ORDER IS PEACE</div></div>
+  <div class="type"><div class="lab">Cinzel 700 · Section Titles · 12–26px</div><div style="font-family:'Cinzel',serif;font-weight:700;font-size:16px;letter-spacing:.2em">COMMAND DECK</div></div>
+  <div class="type"><div class="lab">Rajdhani 600 · UI Labels &amp; Buttons · 11–15px</div><div class="u">Authenticate · Dispatch · Hunt</div></div>
+  <div class="type"><div class="lab">PlexMono 400 · Data &amp; Meta · 8–12px</div><div class="m">SIGHTING LOG // SECTOR 9 // 02:41:07</div></div>
+  <h2>Voice Guidelines</h2>
+  <table>
+    <tr><th style="width:30%">Context</th><th>Example</th></tr>
+    <tr><td><b>Page subtitle</b></td><td>LIVE SURVEILLANCE GRID · PROBE NETWORK · SECTOR COMMAND</td></tr>
+    <tr><td><b>Empty state</b></td><td>NO ACTIVE OPERATIONS — THE HUNT CONTINUES</td></tr>
+    <tr><td><b>Toast</b></td><td>SIGHTING FILED — PROBE GRID UPDATED</td></tr>
+    <tr><td><b>Error</b></td><td>ACCESS DENIED — INCIDENT LOGGED</td></tr>
+  </table>
+  <div class="pg">IRON PROTOCOL · 03</div>
+</div>
+
+<!-- LAYOUT -->
+<div class="sheet">
+  <div class="hband"><div class="l">IRON <b>·</b> PROTOCOL</div><div class="r">04 · Layout</div></div>
+  <h1>Layout &amp; <span class="accent">Spacing</span></h1>
+  <div class="rule"></div>
+  <h3>Application Shell</h3>
+  <table>
+    <tr><th>Region</th><th>Spec</th><th>Behavior</th></tr>
+    <tr><td><b>Galaxy canvas</b></td><td>fixed, z-0</td><td>Three.js starfield; pointer-events none</td></tr>
+    <tr><td><b>Sidebar</b></td><td>236px, rgba(8,8,14,.92)</td><td>12 nav items, status + operative footer</td></tr>
+    <tr><td><b>Topbar</b></td><td>54px</td><td>Path breadcrumb, clearance badge, live clock</td></tr>
+    <tr><td><b>Content</b></td><td>flex-1, padding 30/34px</td><td>Sole scroll region; no fixed overlays</td></tr>
+    <tr><td><b>Gutter</b></td><td>18px grid gap</td><td>Panel rhythm: 13/18/26/30px spacing scale</td></tr>
+  </table>
+  <h3>Grid &amp; Breakpoints</h3>
+  <table>
+    <tr><th>Breakpoint</th><th>Behavior</th></tr>
+    <tr><td><b>&gt;1200px</b></td><td>g-4 stat grids, 4-col kanban, full hero type</td></tr>
+    <tr><td><b>900–1200px</b></td><td>2-col panels, 2-col kanban</td></tr>
+    <tr><td><b>&lt;900px</b></td><td>Sidebar collapses to icon rail; content pads 18px</td></tr>
+  </table>
+  <h3>Radii, Depth, Borders</h3>
+  <p>Radius: <span class="red">2px</span> everywhere (institutional, never playful). Shadows: 0 14px 44px rgba(0,0,0,.55) on modals; 0 0 16px rgba(224,30,55,.3) glow reserved for red elements. Borders: 1px hairline #1e1e2e; red left-rule = status.</p>
+  <div class="pg">IRON PROTOCOL · 04</div>
+</div>
+
+<!-- COMPONENTS 1 -->
+<div class="sheet">
+  <div class="hband"><div class="l">IRON <b>·</b> PROTOCOL</div><div class="r">05 · Components</div></div>
+  <h1>Component <span class="accent">Library I</span></h1>
+  <div class="rule"></div>
+  <div class="comp"><span class="t" style="display:block;font-family:'Cinzel',serif;font-size:9.5px;letter-spacing:.18em;text-transform:uppercase;margin-bottom:8px">Buttons &amp; Badges</span>
+    <div class="row"><span class="btn red">Primary Action</span><span class="btn">Secondary</span><span class="btn ghost">Ghost</span><span class="btn sm">Small</span></div>
+    <div class="row"><span class="badge red">Priority 1</span><span class="badge amber">Watch</span><span class="badge green">Contained</span><span class="badge">Unverified</span></div>
+  </div>
+  <div class="comp"><span class="t" style="display:block;font-family:'Cinzel',serif;font-size:9.5px;letter-spacing:.18em;text-transform:uppercase;margin-bottom:8px">Stat Cards &amp; Panels</span>
+    <div class="row">
+      <div class="stat"><div class="v">92</div><div class="l">Threat Index</div></div>
+      <div class="panelx"><div class="hd">SECTOR THREAT INDEX</div><div class="bd">Live bars with gradient fill · red glow above 75 · amber below.</div></div>
+    </div>
+  </div>
+  <div class="comp"><span class="t" style="display:block;font-family:'Cinzel',serif;font-size:9.5px;letter-spacing:.18em;text-transform:uppercase;margin-bottom:8px">Forms &amp; Inputs</span>
+    <div class="row">
+      <div class="input"><span class="prompt">CLEARANCE&gt;</span><span class="line"></span></div>
+      <span class="badge amber">Focus = red border</span>
+    </div>
+  </div>
+  <div class="pg">IRON PROTOCOL · 05</div>
+</div>
+
+<!-- COMPONENTS 2 -->
+<div class="sheet">
+  <div class="hband"><div class="l">IRON <b>·</b> PROTOCOL</div><div class="r">06 · Components</div></div>
+  <h1>Component <span class="accent">Library II</span></h1>
+  <div class="rule"></div>
+  <div class="comp"><span class="t" style="display:block;font-family:'Cinzel',serif;font-size:9.5px;letter-spacing:.18em;text-transform:uppercase;margin-bottom:8px">Kanban Board</span>
+    <div class="kan">
+      <div class="col"><div class="hd">PLANNING · 2</div><div class="card">IRON HARVEST</div><div class="card">COLD EMBER</div></div>
+      <div class="col"><div class="hd">ACTIVE · 1</div><div class="card" style="border-left-color:#f4a300">NIGHTGLASS</div></div>
+      <div class="col"><div class="hd">CONTAINED · 1</div><div class="card">VOIDWALK</div></div>
+      <div class="col"><div class="hd">FAILED · 0</div></div>
+    </div>
+  </div>
+  <div class="comp"><span class="t" style="display:block;font-family:'Cinzel',serif;font-size:9.5px;letter-spacing:.18em;text-transform:uppercase;margin-bottom:8px">Chat (Inquisitor Uplink)</span>
+    <div class="chat">
+      <div class="m">The trail is still warm. Divert two squads to Torvane grid nine.</div>
+      <div class="m mine">Understood. Grid nine sealed.</div>
+      <div class="m" style="border-style:dashed;background:transparent;color:#5a5a66;align-self:center;font-size:7.5px;letter-spacing:.14em">◈ ENCRYPTED CHANNEL</div>
+    </div>
+  </div>
+  <div class="comp"><span class="t" style="display:block;font-family:'Cinzel',serif;font-size:9.5px;letter-spacing:.18em;text-transform:uppercase;margin-bottom:8px">Terminal</span>
+    <div class="term"><span class="g">OBSIDIAN MAINFRAME v1.0.0 — REMOTE SHELL OPEN</span><br><span class="i">UPLINK ENCRYPTED · AES-7</span><br><span class="r">OBSIDIAN:/home&gt;</span> cat targets.log<br>Kade.exe → HUNTING [TORVANE]<br>Nyx.exe → HUNTING [KESS]<span class="a">▊</span></div>
+  </div>
+  <div class="pg">IRON PROTOCOL · 06</div>
+</div>
+
+<!-- MOTION -->
+<div class="sheet">
+  <div class="hband"><div class="l">IRON <b>·</b> PROTOCOL</div><div class="r">07 · Motion &amp; UX</div></div>
+  <h1>Motion &amp; <span class="accent">Interaction</span></h1>
+  <div class="rule"></div>
+  <table>
+    <tr><th>Moment</th><th>Animation</th><th>Duration / Ease</th></tr>
+    <tr><td>Page title entry</td><td>Scramble-decode from █ blocks</td><td>26ms/char</td></tr>
+    <tr><td>View switch</td><td>Fade + 14px rise</td><td>320ms · cubic(.16,1,.3,1)</td></tr>
+    <tr><td>Buttons</td><td>Magnetic pull toward cursor</td><td>300ms spring</td></tr>
+    <tr><td>Stats</td><td>Count-up with ease-out cubic</td><td>900–1400ms</td></tr>
+    <tr><td>Radar sweep</td><td>360° rotation</td><td>9s linear infinite</td></tr>
+    <tr><td>Blips</td><td>Pulsing halo</td><td>1.8s infinite</td></tr>
+    <tr><td>Boot lines</td><td>Typewriter + beep</td><td>430ms/line</td></tr>
+    <tr><td>Toasts</td><td>Slide-up + fade</td><td>300ms · 3.4s hold</td></tr>
+  </table>
+  <h2>Microcopy &amp; Feedback</h2>
+  <p>Every action answers: escalate → "REPORT ESCALATED — OPERATION CREATED"; transmit → "TRANSMISSION SENT — SECTOR TORVANE NOW RECEIVING"; drag → "OPERATION MOVED TO ACTIVE". Failure is recorded in-universe: "ACCESS DENIED — INCIDENT LOGGED".</p>
+  <h2>Accessibility</h2>
+  <p>AA contrast on all body text · keyboard-operable nav and forms · focus states via red border · custom cursor disabled under 768px · reduced-motion respected for the canvas.</p>
+  <div class="pg">IRON PROTOCOL · 07</div>
+</div>
+
+</body>
+</html>

@@ -158,7 +158,44 @@ def scene_throne():
     lights=[(np.array([0,4,2]),np.array([1,1,1])*2.0),(np.array([-4,-2,3]),np.array([0.6,0.2,0.2])*1.2)]
     return objs,lights,np.array([0,1.1,-5.4]),np.array([0,0.9,0.6])
 
-SCENES={"sigil":scene_sigil,"warship":scene_warship,"helmet":scene_helmet,"planet":scene_planet,"probe":scene_probe,"throne":scene_throne}
+
+def scene_blade():
+    red=Mat([1.0,0.15,0.2], emis=3.2)
+    glow1=Mat([1.0,0.06,0.08], emis=0.14, alpha=0.0)
+    glow2=Mat([1.0,0.05,0.07], emis=0.05, alpha=0.0)
+    dark=Mat([0.09,0.09,0.12], refl=0.3, rough=0.4)
+    steel=Mat([0.25,0.26,0.32], refl=0.5, rough=0.25)
+    objs=[]
+    objs.append(Cylinder([0,0.4,0],0.055,1.9,red))
+    objs.append(Cylinder([0,0.4,0],0.14,1.9,glow1))
+    objs.append(Cylinder([0,0.4,0],0.26,1.9,glow2))
+    objs.append(Cylinder([0,-0.58,0],0.10,0.22,dark))
+    objs.append(Box([0,-0.72,0],[0.36,0.16,0.36],steel))
+    objs.append(Cylinder([0,-0.86,0],0.13,0.34,dark))
+    objs.append(Cylinder([0,-1.14,0],0.16,0.12,steel))
+    lights=[(np.array([3,4,-2]),np.array([1,1,1])*2.6),(np.array([-3,-2,-3]),np.array([0.9,0.2,0.2])*1.4)]
+    return objs,lights,np.array([2.7,0.3,-3.1]),np.array([0,0.15,0])
+
+def scene_citadel():
+    dark=Mat([0.11,0.11,0.15], refl=0.3, rough=0.35)
+    dark2=Mat([0.17,0.17,0.22], refl=0.35, rough=0.3)
+    red=Mat([0.9,0.08,0.12], emis=2.0)
+    core=Mat([1.0,0.3,0.35], emis=2.6)
+    glow=Mat([1.0,0.05,0.07], emis=0.09, alpha=0.0)
+    objs=[Plane([0,1,0],-1.7,dark)]
+    objs.append(Box([0,0.3,0],[6.4,0.7,6.4],dark2))
+    objs.append(Box([0,0.85,0],[4.2,0.7,4.2],dark2))
+    objs.append(Box([0,1.4,0],[2.5,0.7,2.5],dark2))
+    objs.append(Box([0,1.9,0],[1.0,0.8,1.0],dark))
+    objs.append(Box([0,2.7,0],[0.13,1.0,0.13],red))
+    objs.append(Sphere([0,1.0,0],0.55,core))
+    objs.append(Sphere([0,1.0,0],1.15,glow))
+    for i in range(3):
+        objs.append(Cylinder([0,0.15+i*0.55,0],2.7-i*0.55,0.05,red))
+    lights=[(np.array([5,6,4]),np.array([1,1,1])*2.4),(np.array([-4,-2,3]),np.array([0.6,0.15,0.15])*1.3)]
+    return objs,lights,np.array([5.6,2.5,-6.6]),np.array([0,0.7,0])
+
+SCENES={"sigil":scene_sigil,"warship":scene_warship,"helmet":scene_helmet,"planet":scene_planet,"probe":scene_probe,"throne":scene_throne,"blade":scene_blade,"citadel":scene_citadel}
 
 def intersect(objs,o,d,filter_self=True):
     """nearest hit: t(N), p(N,3), n(N,3), ok(N), midx(N)"""
