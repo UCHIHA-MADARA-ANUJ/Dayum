@@ -14,7 +14,7 @@
 - [ ] Discord ID of Participant 1
 
 ## What to attach/upload (keep file names clean)
-- [ ] **Product:** `app/` folder — host it (e.g. GitHub Pages / Netlify / Vercel) and paste the link in the form. Also include a ZIP of `app/` if attachments are allowed. **Demo passphrase: `FOR THE EMPIRE`** — TELL THE JUDGES IN YOUR WRITE-UP.
+- [ ] **Product:** `web/` folder (NEXT.JS APP — deploy it to **Vercel**: push repo to GitHub → vercel.com → import → done, one click). Also keep `app/` (vanilla) as fallback. **Demo passphrase: `FOR THE EMPIRE`** — TELL THE JUDGES IN YOUR WRITE-UP.
 - [ ] **Write-up (≤100 words):** pick one of the 3 options in `deliverables/writeup/WRITEUP-options.md` (Option A recommended, 88 words).
 - [ ] **Pitch Deck:** `deliverables/deck/OBSIDIAN-PITCH-DECK.pptx` (14 slides, editable). Also export a PDF copy.
 - [ ] **UI/UX:** point judges to the **Standards** section inside the live app (it IS the design system), plus the deck's UI/UX slide.

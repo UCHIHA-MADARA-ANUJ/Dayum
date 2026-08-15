@@ -13,7 +13,7 @@ OBSIDIAN is a classified Imperial command portal that turns the post-Order-66 pu
 | # | Deliverable | Where |
 |---|---|---|
 | 1 | Write-up (3 options, ≤100 words) | `deliverables/writeup/WRITEUP-options.md` |
-| 2 | **Product** — OBSIDIAN web app | `app/` (open `app/index.html` or any static host) |
+| 2 | **Product** — OBSIDIAN web app | **`web/` — Next.js 15 + React 19 + Framer Motion + GSAP + Lenis + Three.js + Zustand + Sonner** (primary, deploy to Vercel) · `app/` — zero-dependency vanilla fallback |
 | 3 | Pitch deck (14 slides, editable) | `deliverables/deck/OBSIDIAN-PITCH-DECK.pptx` |
 | 4 | UI/UX — "Iron Protocol" design system | inside the app → **Standards** section |
 | 5 | Promo film (62s) | `deliverables/video/OBSIDIAN-PROMO.mp4` |
@@ -48,8 +48,13 @@ OBSIDIAN is a classified Imperial command portal that turns the post-Order-66 pu
 ## 🚀 Run it
 
 ```bash
-cd app && python3 -m http.server 8080
+# Next.js app (primary)
+cd web && npm install && npm run dev
 # open http://localhost:8080 — passphrase: FOR THE EMPIRE
+
+# Zero-dependency fallback
+cd app && python3 -m http.server 8080
 ```
 
-Or open `app/index.html` directly in a browser (localStorage persists your session).
+**Stack:** Next.js 15 · React 19 · Framer Motion · GSAP · Lenis smooth scroll · Three.js WebGL galaxy · Zustand · Sonner · Tailwind · Lucide — 13 libraries.
+**Crew:** Anuj Phulera · Aarav Choudhary · Jeehaan Kwatra
