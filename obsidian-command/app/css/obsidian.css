@@ -449,3 +449,56 @@ h1.page-title .accent{color:var(--red2)}
 .kan-card::before{top:4px;left:4px;border-top:1px solid var(--red2);border-left:1px solid var(--red2)}
 .kan-card::after{bottom:4px;right:4px;border-bottom:1px solid var(--red2);border-right:1px solid var(--red2)}
 .kan-card:hover::before,.kan-card:hover::after{opacity:1}
+
+/* ═══════════════════════════════════════════════════════════
+   OBSIDIAN FX LAYER — cursor · magnetic · scramble · shutter
+   ═══════════════════════════════════════════════════════════ */
+
+/* Custom cursor */
+.fx-cursor{position:fixed;top:0;left:0;z-index:99999;pointer-events:none;opacity:0;transition:opacity .25s;mix-blend-mode:difference}
+.fx-cursor-dot{width:10px;height:10px;border-radius:50%;background:var(--red2);box-shadow:0 0 14px rgba(255,42,68,.8)}
+.fx-cursor-ring{width:38px;height:38px;border-radius:50%;border:1.5px solid rgba(224,30,55,.55);transition:border-color .2s}
+@media(max-width:768px){.fx-cursor{display:none}}
+
+/* Magnetic elements */
+.btn,.gate-btn{transition:transform .35s cubic-bezier(.2,.9,.3,1),box-shadow .25s,border-color .2s,background .2s,letter-spacing .25s}
+.nav-item{transition:transform .35s cubic-bezier(.2,.9,.3,1),background .15s,color .15s,border-color .2s,padding .18s}
+.btn:active,.gate-btn:active{transform:scale(.94)!important}
+
+/* Scramble text */
+.fx-scramble{letter-spacing:.12em}
+
+/* Word-stagger reveal */
+.fx-reveal-wrap{display:inline-flex;flex-wrap:wrap}
+.fx-reveal-mask{display:inline-block;overflow:hidden;vertical-align:bottom;margin-right:.24em}
+.fx-reveal-word{display:inline-block;transform:translateY(115%);transition:transform .85s cubic-bezier(.16,1,.3,1)}
+.fx-reveal-word.show{transform:translateY(0)}
+
+/* Shutter transition */
+.fx-shutter{position:fixed;inset:0;z-index:95;display:flex;pointer-events:none}
+.fx-shutter-col{flex:1;background:linear-gradient(180deg,#0a0a14,#050507);border-right:1px solid rgba(255,255,255,.06);transform:translateY(100%);transition:transform .7s cubic-bezier(.76,0,.24,1)}
+.fx-shutter.go .fx-shutter-col{transform:translateY(0)}
+.fx-shutter-col:last-child{border-right:none}
+.fx-shutter-col::after{content:"";position:absolute;bottom:0;left:0;right:0;height:3px;background:var(--red);opacity:.25}
+
+/* Film grain */
+.fx-noise{position:fixed;inset:0;z-index:9996;pointer-events:none;opacity:.05;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+
+/* Moving scanline band */
+.fx-scanline{position:fixed;left:0;right:0;height:110px;z-index:9995;pointer-events:none;background:linear-gradient(0deg,transparent 0%,rgba(224,30,55,.07) 50%,transparent 100%);opacity:.55;animation:fxScan 7.5s linear infinite}
+@keyframes fxScan{0%{transform:translateY(-30vh)}100%{transform:translateY(110vh)}}
+
+/* Continuous clip-rect glitch (for big titles) */
+.fx-glitch{position:relative;display:inline-block}
+.fx-glitch::before,.fx-glitch::after{content:attr(data-text);position:absolute;top:0;left:0;width:100%;height:100%;opacity:.8;pointer-events:none}
+.fx-glitch::before{left:2px;text-shadow:-1.5px 0 var(--red2);clip:rect(24px,9999px,90px,0);animation:fxGlitchA 3s infinite linear alternate-reverse}
+.fx-glitch::after{left:-2px;text-shadow:-1.5px 0 var(--ice);clip:rect(85px,9999px,140px,0);animation:fxGlitchB 2.4s infinite linear alternate-reverse}
+@keyframes fxGlitchA{0%{clip:rect(10px,9999px,86px,0)}20%{clip:rect(69px,9999px,12px,0)}40%{clip:rect(2px,9999px,45px,0)}60%{clip:rect(80px,9999px,20px,0)}80%{clip:rect(15px,9999px,90px,0)}100%{clip:rect(50px,9999px,5px,0)}}
+@keyframes fxGlitchB{0%{clip:rect(65px,9999px,100px,0)}20%{clip:rect(3px,9999px,20px,0)}40%{clip:rect(85px,9999px,35px,0)}60%{clip:rect(22px,9999px,60px,0)}80%{clip:rect(95px,9999px,45px,0)}100%{clip:rect(10px,9999px,80px,0)}}
+
+/* Outlined hover text */
+.fx-outline{color:transparent;-webkit-text-stroke:1px rgba(232,228,216,.25);transition:all .35s}
+.fx-outline:hover{color:var(--bone);-webkit-text-stroke:1px var(--red2);text-shadow:0 0 26px rgba(255,42,68,.5)}
+
+/* Matrix rain container */
+.fx-matrix{position:absolute;inset:0;width:100%;height:100%;opacity:.5;pointer-events:none}

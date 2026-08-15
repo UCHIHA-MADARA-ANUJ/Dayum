@@ -87,6 +87,8 @@ function posterSVG(t, {huge=false}={}){
 let booted = false;
 
 function initBoot(){
+  initFX();
+  matrixRain($("#gateMatrix"));
   if (Store.get("session", false)) { enterApp(); return; }
   initGalaxy();
   const gate = $("#gate");
@@ -95,10 +97,13 @@ function initBoot(){
 }
 function startBoot(){
   if (booted) return; booted = true;
+  FXAudio.unlock();
+  shutterTransition();
   const gate = $("#gate");
   gate.style.transition = "opacity .5s";
   gate.style.opacity = "0";
   setTimeout(() => gate.classList.add("hidden"), 520);
+  window.__bootBeeps = bootBeeps(900);
   runBootSequence();
 }
 function runBootSequence(){
@@ -166,11 +171,14 @@ function finishBoot(){
       if (v.toUpperCase() === OBS.passphrase){
         status.textContent = "✓ CLEARANCE GRANTED";
         status.style.color = "var(--green)";
+        FXAudio.success();
+        if (window.__bootBeeps) clearInterval(window.__bootBeeps);
         Store.set("session", true);
         setTimeout(enterApp, 650);
       } else {
         status.textContent = "✗ ACCESS DENIED — INCIDENT LOGGED";
         status.classList.add("err");
+        FXAudio.deny();
         const boot = $("#boot");
         boot.classList.add("boot-shake");
         setTimeout(() => boot.classList.remove("boot-shake"), 550);
@@ -328,10 +336,23 @@ function route(id){
   const view = $("#view");
   view.classList.remove("view-enter"); void view.offsetWidth; view.classList.add("view-enter");
   sweepFx();
+  shutterTransition();
   ({ command:renderCommand, tracker:renderTracker, dossiers:renderDossiers, intel:renderIntel,
      ops:renderOps, interdiction:renderInterdiction, comms:renderComms, archive:renderArchive,
      standards:renderStandards }[id])();
-  setTimeout(() => { glitchTitle(); animateCounters(); }, 160);
+  setTimeout(() => {
+    const title = $("#view .page-title");
+    if (title && !title.dataset.fx){
+      title.dataset.fx = "1";
+      scrambleIn(title);
+      setTimeout(() => title.classList.add("fx-glitch"), 700 + title.textContent.length * 30);
+      title.setAttribute("data-text", title.textContent.trim());
+    }
+    const sub = $("#view .page-sub");
+    if (sub) revealWords(sub);
+    animateCounters();
+    $$("#view .stat-value").forEach(el => el.classList.add("fx-outline"));
+  }, 120);
   window.scrollTo(0,0);
 }
 
@@ -343,6 +364,7 @@ function enterApp(){
   $("#sideUser").textContent = OBS.operative;
   loadStore();
   initGalaxy();
+  if (!window.__fxInited){ initFX(); window.__fxInited = true; }
   showWelcome();
   buildNav();
   setInterval(() => {
