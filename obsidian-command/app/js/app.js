@@ -316,6 +316,9 @@ const NAV = [
   { id:"interdiction", label:"Interdiction", icon:'<path d="M12 2v20M2 12h20"/><circle cx="12" cy="12" r="8"/>' },
   { id:"comms",  label:"Inquisitor Comms", icon:'<path d="M4 5h16v11H9l-5 4z"/><path d="M8 9h8M8 12h5"/>' },
   { id:"archive",label:"Archive",        icon:'<path d="M4 4h16v16H4z"/><path d="M4 9h16M9 4v5"/>' },
+  { id:"terminal",label:"Terminal",      icon:'<path d="M4 5h16v14H4z"/><path d="M8 10l3 3-3 3M13 16h4"/>' },
+  { id:"manifesto",label:"Manifesto",    icon:'<path d="M6 3h12v18l-3-2-3 2-3-2-3 2z"/>' },
+  { id:"metrics",label:"Hunt Metrics",   icon:'<path d="M4 20V10m6 10V4m6 16v-7m4 7V7"/>' },
   { id:"standards", label:"Standards",   icon:'<path d="M12 2l2.5 5 5.5.8-4 3.9.9 5.5-4.9-2.6-4.9 2.6.9-5.5-4-3.9L9.5 7z"/>' }
 ];
 let current = "command";
@@ -339,6 +342,7 @@ function route(id){
   shutterTransition();
   ({ command:renderCommand, tracker:renderTracker, dossiers:renderDossiers, intel:renderIntel,
      ops:renderOps, interdiction:renderInterdiction, comms:renderComms, archive:renderArchive,
+     terminal:renderTerminal, manifesto:renderManifesto, metrics:renderMetrics,
      standards:renderStandards }[id])();
   setTimeout(() => {
     const title = $("#view .page-title");
@@ -375,93 +379,106 @@ function enterApp(){
 }
 $("#logout")?.addEventListener("click", () => { Store.set("session", false); location.reload(); });
 
-/* ── COMMAND DECK ────────────────────────────────────── */
+/* ── COMMAND DECK — HERO PAGE ─────────────────────── */
 function renderCommand(){
-  const hot = SECTORS.filter(s => s.status === "HOT").length;
   const tick = [...TICKER_LINES, ...TICKER_LINES].map(l => `<span>${esc(l)}</span>`).join("");
-  const recent = [...INTEL].slice(0, 5);
-  const activeOps = OPS.filter(o => o.status === "ACTIVE");
-  const pri1 = activeOps.filter(o => o.pri === 1).length;
+  const eco = [
+    { id:"tracker", name:"GALAXY TRACKER", desc:"Live sector radar. Probe drops. Threat heat. Sighting log.", num:"01" },
+    { id:"dossiers", name:"WANTED DOSSIERS", desc:"Nine original Jedi targets. Psychoprofiles. Printable warrants.", num:"02" },
+    { id:"ops", name:"OPERATIONS", desc:"Kanban hunt dispatch. Squad assignment. Priority tiers.", num:"03" },
+    { id:"intel", name:"INTELLIGENCE", desc:"Probe & ISB feed. Redaction. Escalation to ops.", num:"04" },
+    { id:"interdiction", name:"INTERDICTION", desc:"Propaganda studio. Counter-recruitment broadcasts.", num:"05" },
+    { id:"comms", name:"INQUISITOR UPLINK", desc:"Encrypted channel. Six Inquisitor operatives online.", num:"06" },
+    { id:"archive", name:"IMPERIAL ARCHIVE", desc:"Directive 66. Doctrine. Classified records.", num:"07" },
+    { id:"terminal", name:"TERMINAL", desc:"Direct console access to the OBSIDIAN mainframe.", num:"08" },
+    { id:"manifesto", name:"MANIFESTO", desc:"The Emperor's case against the Order. Read it.", num:"09" },
+    { id:"metrics", name:"HUNT METRICS", desc:"Purge completion. Sector indices. Kill counts.", num:"10" },
+    { id:"standards", name:"IMPERIAL STANDARDS", desc:"The design system behind the network.", num:"11" }
+  ];
+  const activeOps = OPS.filter(o => o.status === "ACTIVE").length;
 
   $("#view").innerHTML = `
-  <div class="section-head">
-    <div><h1 class="page-title">Command <span class="accent">Deck</span></h1>
-    <div class="page-sub">Order 66 · Post-Purge Operations · Imperial Hunt Command</div></div>
-    <div class="actions">
-      <button class="btn btn-red" onclick="route('tracker')">◈ OPEN GALAXY TRACKER</button>
-      <button class="btn" onclick="route('interdiction')">◆ LAUNCH PROPAGANDA</button>
-    </div>
-  </div>
-
-  <div class="ticker mb"><div class="ticker-inner">${tick}</div></div>
-
-  <div class="grid g-4 mb">
-    <div class="stat"><div class="stat-label">ACTIVE HUNTS</div><div class="stat-value red">${activeOps.length}</div><div class="stat-note">PRIORITY 1: ${pri1}</div></div>
-    <div class="stat"><div class="stat-label">JEDI CONTAINED</div><div class="stat-value">${TARGETS.length - TARGETS.filter(t=>t.status.startsWith("PRIORITY")).length}</div><div class="stat-note">EXECUTED OR CAPTURED</div></div>
-    <div class="stat"><div class="stat-label">CONFIRMED SIGHTINGS</div><div class="stat-value amber">${SIGHTINGS.filter(s=>s.status==="CONFIRMED").length}</div><div class="stat-note">LAST 72 STANDARD HOURS</div></div>
-    <div class="stat"><div class="stat-label">HOT SECTORS</div><div class="stat-value green">${hot}</div><div class="stat-note">LEGIONS ON ALERT</div></div>
-  </div>
-
-  <div class="grid g-2 mb">
-    <div class="panel">
-      <div class="panel-head"><h3>SECTOR THREAT INDEX</h3><span class="tag">LIVE</span></div>
-      <div class="panel-body" style="padding:18px 22px 8px">
-        ${SECTORS.slice().sort((a,b)=>b.threat-a.threat).map(s => `
-          <div class="flex spread mb" style="margin-bottom:14px">
-            <span class="mono" style="font-size:11px;letter-spacing:.14em;color:var(--steel);width:120px">${s.name}</span>
-            <div style="flex:1;height:8px;background:var(--bg2);border:1px solid var(--line)"><div style="width:${s.threat}%;height:100%;background:linear-gradient(90deg,var(--red3),${s.threat>75?'var(--red2)':'var(--amber)'});box-shadow:0 0 8px ${s.threat>75?'rgba(255,42,68,.5)':'rgba(244,163,0,.3)'}"></div></div>
-            <span class="mono" style="font-size:11px;color:${s.threat>75?'var(--red2)':'var(--amber)'};width:34px;text-align:right">${s.threat}</span>
-          </div>`).join("")}
+  <div class="hero">
+    <div class="hero-hud">
+      <div class="hh-l">
+        <span><b class="dot-red" style="display:inline-block;width:6px;height:6px;border-radius:50%;margin-right:8px"></b>SYS.OPERATIONAL</span>
+        <span>SECTORS: 10 · GARRISONS: 8</span>
+        <span id="hudMem">MEM_ALLOC: 0.00 GB</span>
+      </div>
+      <div class="hh-r">
+        <span>NODE: OBSIDIAN_PRIME</span>
+        <span>CLEARANCE: ALPHA-7</span>
+        <span id="hudClock">--:--:--</span>
       </div>
     </div>
 
-    <div style="display:flex;flex-direction:column;gap:18px">
-      <div class="panel">
-        <div class="panel-head"><h3>RECENT INTELLIGENCE</h3><button class="btn btn-ghost btn-sm" onclick="route('intel')">OPEN FEED →</button></div>
-        <div class="row-list">
-          ${recent.map(i => `
-            <div class="row">
-              <div class="r-main"><div class="r-title">${esc(i.txt)}</div>
-              <div class="r-sub">${esc(i.src)} · ${esc(i.time)}</div></div>
-              <div class="r-right"><span class="badge ${i.status==='CONFIRMED'?'badge-red':i.status==='DISPUTED'?'badge-amber':'badge'}">${esc(i.status)}</span></div>
-            </div>`).join("")}
-        </div>
+    <div class="hero-title">
+      <div class="outline" style="font-size:clamp(40px,6vw,84px)">THE JEDI ARE</div>
+      <div class="solid red" style="font-size:clamp(52px,8.5vw,120px)">SCATTERED.</div>
+      <div class="solid" style="font-size:clamp(28px,4.2vw,58px);letter-spacing:.06em">BUT NOT <span class="red">HIDDEN.</span></div>
+    </div>
+    <div class="hero-scroll">▼ SCROLL TO INITIATE SEQUENCE ▼</div>
+  </div>
+
+  <div class="mani-preview">
+    <div class="mp-grid">
+      <div>
+        <div class="mp-head">THE OLD<br>ORDER IS<br><span class="red">DEAD.</span></div>
       </div>
-      <div class="panel">
-        <div class="panel-head"><h3>ORDER 66 STATUS</h3><span class="tag badge badge-red">ENFORCED</span></div>
-        <div class="panel-body" style="display:flex;align-items:center;gap:20px">
-          <svg viewBox="0 0 100 100" style="width:74px;height:74px;flex-shrink:0">
-            <path d="M50 3 61 24 84 16 76 39 97 50 76 61 84 84 61 76 50 97 39 76 16 84 24 61 3 50 24 39 16 16 39 24z" fill="none" stroke="#e01e37" stroke-width="2"/>
-            <circle cx="50" cy="50" r="14" fill="none" stroke="#e8e4d8" stroke-width="2"/>
-            <circle cx="50" cy="50" r="6" fill="#e01e37"/>
-          </svg>
-          <div style="font-size:13px;line-height:1.7;color:var(--steel)">Directive 66 remains in force. The purge is <b class="red">incomplete</b>. <span class="mono" style="font-size:10px">SURVIVORS: ${TARGETS.filter(t=>t.status.startsWith("PRIORITY")).length} CLASSIFIED TARGETS · HUNT CONTINUES INDEFINITELY</span></div>
-        </div>
+      <div class="mp-body">
+        <p class="big">The Jedi promised to protect the galaxy. Instead they hoarded its power — and when the Emperor spoke, they scattered like cowards.</p>
+        <p>OBSIDIAN is the answer. A classified network that turns a thousand hiding places into one hunting ground. Every sector, every probe, every citizen — a sensor in the Emperor's hand.</p>
+        <p>The hunt is not a campaign. It is a condition of existence.</p>
+        <div class="mp-cta"><button class="btn btn-red" onclick="route('manifesto')">READ THE MANIFESTO</button></div>
       </div>
     </div>
   </div>
 
-  <div class="grid g-2">
-    <div class="panel">
-      <div class="panel-head"><h3>ACTIVE OPERATIONS</h3><button class="btn btn-ghost btn-sm" onclick="route('ops')">DISPATCH BOARD →</button></div>
-      <div class="row-list">
-        ${activeOps.map(o => { const t = targetById(o.target); return `
-          <div class="row">
-            <div class="r-main"><div class="r-title">${esc(o.name)} <span class="badge ${o.pri===1?'badge-red':o.pri===2?'badge-amber':'badge'}">P${o.pri}</span></div>
-            <div class="r-sub">TARGET: ${t ? esc(t.name) : "—"} · ${esc(o.squad)}</div></div>
-            <div class="r-right"><button class="btn btn-ghost btn-sm" onclick="openDossier('${o.target}')">DOSSIER</button></div>
-          </div>`; }).join("")}
-        ${activeOps.length ? "" : `<div class="empty-state"><span class="es-icon">◈</span>NO ACTIVE OPERATIONS</div>`}
-      </div>
+  <div style="padding:60px 0 20px">
+    <div class="eco-head">THE ECOSYSTEM.</div>
+    <div class="eco-grid">
+      ${eco.map(f => `
+        <button class="eco-card" onclick="route('${f.id}')">
+          <div class="eco-glow"></div><div class="eco-sweep"></div>
+          <span class="eco-num">MODULE_${f.num}</span>
+          <h3>${f.name}</h3>
+          <p>${f.desc}</p>
+          <span class="eco-init">Initialize</span>
+        </button>`).join("")}
     </div>
-    <div class="panel">
-      <div class="panel-head"><h3>EMPEROR'S MANDATE</h3><span class="tag badge badge-amber">LIVE FEED</span></div>
-      <div class="panel-body" style="font-size:14px;line-height:1.8;color:#c9c5b8;font-style:italic">
-        "They scattered like embers from a fire. But embers still burn — and a single spark, left untended, can consume a world. <b style="color:var(--bone)">Find the sparks.</b> Stomp them out. And when the galaxy is dark and cold and quiet, only then will you know peace — my peace."
-        <div class="mono mt" style="font-size:10px;color:var(--dim);letter-spacing:.2em">— THE EMPEROR, SECTOR 2 CYCLE 4</div>
-      </div>
+  </div>
+
+  <div style="padding:40px 0 60px">
+    <div class="eco-head" style="font-size:clamp(30px,4vw,54px)">HUNT METRICS.</div>
+    <div class="stat-blocks">
+      <div class="stat-block"><div class="sb-line"></div><div class="sb-glow"></div><div class="sb-val" data-count="9">0</div><span class="sb-label">JEDI TARGETS</span><p>Prioritized & psychoprofiled</p></div>
+      <div class="stat-block"><div class="sb-line"></div><div class="sb-glow"></div><div class="sb-val" data-count="10">0</div><span class="sb-label">SECTORS COVERED</span><p>Live threat indices</p></div>
+      <div class="stat-block"><div class="sb-line"></div><div class="sb-glow"></div><div class="sb-val" data-count="6">0</div><span class="sb-label">INQUISITORS ONLINE</span><p>Encrypted uplink</p></div>
+      <div class="stat-block"><div class="sb-line"></div><div class="sb-glow"></div><div class="sb-val" data-count="${activeOps}">0</div><span class="sb-label">ACTIVE HUNTS</span><p>In the field right now</p></div>
     </div>
-  </div>`;
+  </div>
+
+  <div class="ticker mb" style="margin-top:20px"><div class="ticker-inner">${tick}</div></div>`;
+
+  // hero HUD ticking
+  const clock = $("#hudClock"), mem = $("#hudMem");
+  const clkIv = setInterval(() => {
+    const d = new Date();
+    clock.textContent = d.toLocaleTimeString("en-GB");
+    mem.textContent = "MEM_ALLOC: " + (12 + Math.random() * 6).toFixed(2) + " GB";
+  }, 700);
+  window.__heroTicker = clkIv;
+  // count-up hero stats
+  $$(".sb-val[data-count]").forEach(el => {
+    const target = parseInt(el.dataset.count, 10);
+    const t0 = performance.now();
+    function step(now){
+      const p = Math.min(1, (now - t0) / 1200);
+      el.textContent = Math.round(target * (1 - Math.pow(1 - p, 3)));
+      if (p < 1) requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+  });
 }
 
 /* ── GALAXY TRACKER ──────────────────────────────────── */
@@ -1012,6 +1029,207 @@ function openDoc(id){
       ${d.body.split("\n\n").map(p => `<p>${esc(p)}</p>`).join("")}
       <div class="dr-meta" style="margin-top:26px">— END OF DOCUMENT — · HUNT CONTINUES</div>
     </div>`;
+}
+
+/* ── TERMINAL — interactive command console ───────────── */
+let termPath = ["home"], termLines = 0;
+const TERM_COLOR = { info:"c-ice", warn:"c-amber", error:"c-red", success:"c-green", dim:"c-dim", text:"c-steel", hi:"c-bone" };
+function renderTerminal(){
+  const boot = [
+    { t:"OBSIDIAN MAINFRAME v1.0.0 — REMOTE SHELL OPEN", c:"info" },
+    { t:"UPLINK ENCRYPTED · AES-7 · ZERO-KEY PROTOCOL", c:"info" },
+    { t:"TYPE 'help' FOR COMMAND LIST · 'clear' TO RESET", c:"dim" },
+    { t:"", c:"dim" }
+  ];
+  termPath = ["home"];
+  $("#view").innerHTML = `
+  <div class="section-head">
+    <div><h1 class="page-title">Imperial <span class="accent">Terminal</span></h1>
+    <div class="page-sub">Direct console access · OBSIDIAN mainframe · Operative ${OBS.operative}</div></div>
+  </div>
+  <div class="terminal">
+    <div class="term-head"><div class="dots"><i></i><i></i><i></i></div><span>OBSIDIAN://${OBS.operative}</span><span>● SECURE</span></div>
+    <div class="term-body" id="termBody">
+      ${boot.map(l => `<div class="term-line ${TERM_COLOR[l.c]}">${esc(l.t)}</div>`).join("")}
+      <div class="term-input"><span class="prompt">OBSIDIAN:/home&gt;</span><input id="termIn" autocomplete="off" spellcheck="false" autofocus></div>
+    </div>
+  </div>`;
+  const body = $("#termBody"), input = $("#termIn");
+  input.addEventListener("keydown", e => {
+    if (e.key !== "Enter") return;
+    const v = input.value.trim();
+    input.value = "";
+    termPrint(`<span class="c-red">OBSIDIAN:/${termPath.join("/")}&gt;</span> ${esc(v)}`, "dim");
+    if (v) handleTerm(v, body);
+    body.scrollTop = body.scrollHeight;
+    input.focus();
+  });
+  input.focus();
+}
+function termPrint(html, color){
+  const body = $("#termBody");
+  const div = document.createElement("div");
+  div.className = "term-line " + TERM_COLOR[color || "text"];
+  div.innerHTML = html;
+  body.insertBefore(div, body.querySelector(".term-input"));
+  termLines++;
+}
+function termSleep(ms){ return new Promise(r => setTimeout(r, ms)); }
+function termDir(path){ let c = OBS_FS; for (const p of path) c = c?.[p]; return c; }
+function termFiles(obj){ return Object.keys(obj).map(k => obj[k] && typeof obj[k] === "object" ? k + "/" : k).join("   "); }
+async function handleTerm(cmd, body){
+  const [c, ...args] = cmd.split(/\s+/);
+  const a = args.join(" ");
+  switch (c.toLowerCase()){
+    case "help":
+      termPrint(`AVAILABLE COMMANDS:`, "hi");
+      termPrint(`  help           — this list`, "text");
+      termPrint(`  ls             — list directory`, "text");
+      termPrint(`  cd <dir>       — change directory (home, sectors, dossiers, ops)`, "text");
+      termPrint(`  cat <file>     — read a file`, "text");
+      termPrint(`  scan <sector>  — run a probe scan`, "text");
+      termPrint(`  locate <id>    — locate a target (kade, nyx, voss…)`, "text");
+      termPrint(`  status         — network status`, "text");
+      termPrint(`  ping           — test uplink latency`, "text");
+      termPrint(`  whoami         — operative identity`, "text");
+      termPrint(`  clear          — reset console`, "text");
+      break;
+    case "ls": {
+      const d = termDir(termPath);
+      termPrint(termFiles(d), "text");
+      break;
+    }
+    case "cd": {
+      if (!a || a === "~" || a === "/"){ termPath = ["home"]; termPrint("→ /home", "dim"); break; }
+      const d = termDir(termPath);
+      if (d && d[a] && typeof d[a] === "object"){ termPath = [...termPath, a]; termPrint("→ /" + termPath.join("/"), "dim"); }
+      else termPrint("ERROR: no such directory: " + a, "error");
+      break;
+    }
+    case "cat": {
+      const d = termDir(termPath);
+      if (d && d[a]) termPrint(d[a].replace(/\n/g, "<br>"), "text");
+      else termPrint("ERROR: no such file: " + a, "error");
+      break;
+    }
+    case "scan": {
+      const sec = SECTORS.find(s => s.name.toLowerCase() === (a || "").toLowerCase()) || R.pick(SECTORS);
+      termPrint(`SCANNING ${sec.name}…`, "info");
+      await termSleep(700);
+      termPrint(`THERMAL SWEEP: ${R.int(3, 40)} signatures · JEDI MATCH: ${Math.random() > .5 ? "NEGATIVE" : "POSITIVE — ESCALATE"}`, Math.random() > .5 ? "success" : "warn");
+      termPrint(`PROBE COVERAGE: ${R.int(60, 98)}% · GARRISON: ${sec.garrison} · THREAT: ${sec.threat}/100`, "text");
+      break;
+    }
+    case "locate": {
+      const t = TARGETS.find(x => x.name.split(" ")[0].toLowerCase() === (a || "").toLowerCase()) || targetById(a) || R.pick(TARGETS);
+      termPrint(`TARGET: ${t.name} — ${t.epithet}`, "hi");
+      termPrint(`REWARD: ${t.reward} · THREAT: ${t.threat}`, "warn");
+      termPrint(`LAST SEEN: ${t.lastSeen}`, "text");
+      termPrint(`STATUS: ${t.status}`, t.status.startsWith("DECEASED") ? "error" : "success");
+      break;
+    }
+    case "status":
+      termPrint(`OBSIDIAN NETWORK STATUS`, "hi");
+      termPrint(`  ACTIVE HUNTS ....... ${OPS.filter(o=>o.status==="ACTIVE").length}`, "text");
+      termPrint(`  SIGHTINGS ......... ${SIGHTINGS.length}`, "text");
+      termPrint(`  HOT SECTORS ....... ${SECTORS.filter(s=>s.status==="HOT").length}`, "warn");
+      termPrint(`  INQUISITORS ....... ${INQUISITORS.length} ONLINE`, "success");
+      termPrint(`  ENCRYPTION ......... AES-7 ACTIVE`, "success");
+      break;
+    case "ping":
+      for (let i = 0; i < 4; i++){
+        await termSleep(220);
+        termPrint(`probe-${R.int(1,9)}: time=${R.int(8, 42)}ms  TTL=64  OK`, "success");
+      }
+      break;
+    case "whoami":
+      termPrint(`OPERATIVE ${OBS.operative} · CLEARANCE ${OBS.clearance}`, "hi");
+      termPrint(`DIVISION: JEDI APPREHENSION · LOYALTY: ABSOLUTE`, "text");
+      break;
+    case "clear":
+      $$("#termBody .term-line").forEach(l => l.remove());
+      break;
+    default:
+      termPrint(`ERROR: unknown command '${c}'. Type 'help'.`, "error");
+  }
+  body.scrollTop = body.scrollHeight;
+}
+
+/* ── MANIFESTO — cinematic doctrine page ─────────────── */
+function renderManifesto(){
+  $("#view").innerHTML = `
+  <div class="manifesto">
+    <div class="mani-badge">INTERNAL DOCUMENT // LEVEL 4 CLEARANCE</div>
+    <div class="mani-title">THE JEDI<br><span class="red">LIED.</span></div>
+    <div class="mani-body">
+      <p class="hi">They called themselves guardians. For a thousand years, the Order whispered into the ears of kings and councils — steering civilization toward its own narrow vision while the galaxy kneeled to their mysticism.</p>
+      <p>They told you the Force was a gift. They told you they served peace. Every word was a leash. Every temple a cage. And when the Emperor finally spoke the truth, they did not fight for the galaxy — they scattered like embers from a fire.</p>
+      <div class="mani-quote">"But embers still burn. And a single spark, left untended, can consume a world. Find the sparks. Stomp them out. And when the galaxy is dark and cold and quiet — only then will you know peace. My peace."<br><span style="display:block;margin-top:14px;font-size:11px;letter-spacing:.3em;color:var(--red2)">— THE EMPEROR</span></div>
+      <p>OBSIDIAN exists because mercy is not a strategy. Every sector is watched. Every citizen is a sensor. Every whisper is a thread we can pull.</p>
+      <p class="hi">The hunt is not a campaign. It is a condition of existence. The Empire does not stop hunting. The Empire simply is the hunt.</p>
+      <p style="color:var(--dim);font-size:11px;letter-spacing:.3em;text-transform:uppercase">— END OF DOCUMENT — · THE HUNT NEVER ENDS</p>
+    </div>
+  </div>`;
+  // scramble each paragraph into view
+  const ps = $$("#view .mani-body p, #view .mani-quote");
+  ps.forEach(p => { p.style.opacity = "0"; p.style.transition = "opacity .4s"; });
+  let i = 0;
+  const iv = setInterval(() => {
+    if (i >= ps.length){ clearInterval(iv); return; }
+    const p = ps[i];
+    p.style.opacity = "1";
+    scrambleText(p, p.textContent.trim());
+    i++;
+  }, 320);
+}
+
+/* ── HUNT METRICS — giant stat page ──────────────────── */
+function renderMetrics(){
+  const blocks = [
+    { v:"9", label:"JEDI TARGETS", d:"Psychoprofiled. Prioritized. Hunted." },
+    { v:"10", label:"SECTORS COVERED", d:"From Torvane to Valdris." },
+    { v:"6", label:"INQUISITORS ONLINE", d:"The Hound. The Surgeon. The Zealot." },
+    { v:"11", label:"MODULES OPERATIONAL", d:"One nervous system." },
+    { v:"100+", label:"INTEL REPORTS", d:"Probe drops on demand." },
+    { v:"0", label:"MERCY", d:"The Emperor decides." }
+  ];
+  $("#view").innerHTML = `
+  <div class="section-head">
+    <div><h1 class="page-title">Hunt <span class="accent">Metrics</span></h1>
+    <div class="page-sub">Purge statistics · Sector indices · Network vitals</div></div>
+  </div>
+  <div class="stat-blocks" style="margin-top:0">
+    ${blocks.map(b => `
+      <div class="stat-block"><div class="sb-line"></div><div class="sb-glow"></div>
+        <div class="sb-val" data-count="${b.v.startsWith("100")?100:parseInt(b.v)}">0</div>
+        <span class="sb-label">${b.label}</span><p>${b.d}</p></div>`).join("")}
+  </div>
+  <div class="panel mt">
+    <div class="panel-head"><h3>PURGE COMPLETION</h3><span class="tag badge badge-red">DIRECTIVE 66</span></div>
+    <div class="panel-body">
+      <div style="height:14px;background:var(--bg2);border:1px solid var(--line);position:relative;overflow:hidden">
+        <div id="purgeBar" style="height:100%;width:0%;background:linear-gradient(90deg,var(--red3),var(--red2));box-shadow:0 0 16px rgba(255,42,68,.6);transition:width 1.6s cubic-bezier(.16,1,.3,1)"></div>
+      </div>
+      <div class="flex spread mt">
+        <span class="mono" style="font-size:10px;color:var(--dim);letter-spacing:.2em">CONFIRMED ELIMINATED: 1 OF 9</span>
+        <span class="mono" style="font-size:10px;color:var(--red2);letter-spacing:.2em" id="purgePct">0%</span>
+      </div>
+    </div>
+  </div>`;
+  setTimeout(() => {
+    const bar = $("#purgeBar");
+    if (bar){ bar.style.width = "11%"; $("#purgePct").textContent = "11%"; }
+    $$("#view .sb-val[data-count]").forEach(el => {
+      const t = parseInt(el.dataset.count, 10);
+      const t0 = performance.now();
+      function step(now){
+        const p = Math.min(1, (now - t0) / 1400);
+        el.textContent = Math.round(t * (1 - Math.pow(1 - p, 3)));
+        if (p < 1) requestAnimationFrame(step);
+      }
+      requestAnimationFrame(step);
+    });
+  }, 250);
 }
 
 /* ── STANDARDS (design system) ───────────────────────── */
