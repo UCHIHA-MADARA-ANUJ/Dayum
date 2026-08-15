@@ -1,455 +1,431 @@
-/* Generates the OBSIDIAN pitch deck as pixel-perfect HTML slides (13), then it's
-   converted to PDF via html2pdf.js. Renders are base64-embedded. */
+/* OBSIDIAN PITCH DECK v5 — editorial "imperial dossier" design.
+   Light cream paper · ink type · one deep red · Playfair Display + Inter.
+   No dark-neon AI clichés: no glows, no brackets, no scanlines. */
 "use strict";
 const fs = require("fs");
 const path = require("path");
 
 const REND = path.join(__dirname, "..", "deliverables", "renders");
 const OUT = path.join(__dirname, "..", "deliverables", "deck");
+const F = "file:///home/user/Dayum/obsidian-command/app/fonts/";
 
-const b64 = (name) => {
-  const p = path.join(REND, name);
-  return fs.readFileSync(p).toString("base64");
-};
+const b64 = (name) => fs.readFileSync(path.join(REND, name)).toString("base64");
 const bg = (name) => `url('data:image/png;base64,${b64(name)}')`;
 
 const CSS = `
 @page{size:13.333in 7.5in;margin:0}
 *{margin:0;padding:0;box-sizing:border-box;-webkit-print-color-adjust:exact;print-color-adjust:exact}
-@font-face{font-family:'Cinzel';src:url('file:///home/user/Dayum/obsidian-command/app/fonts/cinzel-latin-900-normal.woff2') format('woff2');font-weight:900}
-@font-face{font-family:'Cinzel';src:url('file:///home/user/Dayum/obsidian-command/app/fonts/cinzel-latin-700-normal.woff2') format('woff2');font-weight:700}
-@font-face{font-family:'Cinzel';src:url('file:///home/user/Dayum/obsidian-command/app/fonts/cinzel-latin-400-normal.woff2') format('woff2');font-weight:400}
-@font-face{font-family:'PlexMono';src:url('file:///home/user/Dayum/obsidian-command/app/fonts/ibm-plex-mono-latin-400-normal.woff2') format('woff2');font-weight:400}
-@font-face{font-family:'PlexMono';src:url('file:///home/user/Dayum/obsidian-command/app/fonts/ibm-plex-mono-latin-700-normal.woff2') format('woff2');font-weight:700}
-html,body{width:13.333in;height:7.5in;background:#06060a;color:#eae6da;font-family:'PlexMono',monospace}
-.slide{width:13.333in;height:7.5in;position:relative;overflow:hidden;page-break-after:always;display:flex;flex-direction:column;background:#06060a}
+@font-face{font-family:'Playfair';src:url('${F}playfair-display-latin-400-normal.woff2') format('woff2');font-weight:400}
+@font-face{font-family:'Playfair';src:url('${F}playfair-display-latin-500-normal.woff2') format('woff2');font-weight:500}
+@font-face{font-family:'Playfair';src:url('${F}playfair-display-latin-600-normal.woff2') format('woff2');font-weight:600}
+@font-face{font-family:'Playfair';src:url('${F}playfair-display-latin-700-normal.woff2') format('woff2');font-weight:700}
+@font-face{font-family:'Playfair';src:url('${F}playfair-display-latin-800-normal.woff2') format('woff2');font-weight:800}
+@font-face{font-family:'Playfair';src:url('${F}playfair-display-latin-900-normal.woff2') format('woff2');font-weight:900}
+@font-face{font-family:'Playfair';src:url('${F}playfair-display-latin-400-italic.woff2') format('woff2');font-weight:400;font-style:italic}
+@font-face{font-family:'Playfair';src:url('${F}playfair-display-latin-700-italic.woff2') format('woff2');font-weight:700;font-style:italic}
+@font-face{font-family:'Inter';src:url('${F}inter-latin-400-normal.woff2') format('woff2');font-weight:400}
+@font-face{font-family:'Inter';src:url('${F}inter-latin-500-normal.woff2') format('woff2');font-weight:500}
+@font-face{font-family:'Inter';src:url('${F}inter-latin-600-normal.woff2') format('woff2');font-weight:600}
+@font-face{font-family:'Inter';src:url('${F}inter-latin-700-normal.woff2') format('woff2');font-weight:700}
+@font-face{font-family:'PlexMono';src:url('${F}ibm-plex-mono-latin-400-normal.woff2') format('woff2');font-weight:400}
+
+/* palette */
+:root{
+  --paper:#F5F2EA; --paper2:#EFEBE0; --ink:#1A1611; --ink2:#3E3830;
+  --muted:#8A8274; --hair:#DCD5C6; --red:#B00E27; --red-d:#8C0A1F;
+  --plate:#12100C; --cream:#F5F2EA;
+}
+html,body{width:13.333in;height:7.5in;background:var(--paper);color:var(--ink);font-family:'Inter',sans-serif}
+.slide{width:13.333in;height:7.5in;position:relative;overflow:hidden;page-break-after:always;background:var(--paper)}
 .slide:last-child{page-break-after:auto}
-.bgimg{position:absolute;inset:0;background-size:cover;background-position:center}
-.veil{position:absolute;inset:0;background:radial-gradient(ellipse at center,rgba(6,6,10,.30) 0%,rgba(6,6,10,.88) 100%)}
-.pad{padding:0.55in 0.6in 0.42in;position:relative;flex:1;display:flex;flex-direction:column;min-height:0}
-.kicker{font-size:10pt;font-weight:700;letter-spacing:.28em;color:#ff2a44;text-transform:uppercase}
-.kbar{width:0.55in;height:2.5pt;background:#e01e37;margin:5pt 0 9pt}
-.t1{font-family:'Cinzel',serif;font-weight:900;font-size:34pt;line-height:1.02;color:#eae6da;letter-spacing:.01em;text-transform:uppercase}
-.t1 .accent{color:#ff2a44}
-.hrule{height:1px;background:linear-gradient(90deg,#e01e37,transparent);margin:14pt 0 18pt}
-.ftr{position:absolute;left:0.6in;right:0.6in;bottom:0.22in;display:flex;justify-content:space-between;font-size:7pt;letter-spacing:.22em;color:#3a3a4a;text-transform:uppercase;border-top:1px solid #1e1e2e;padding-top:6pt}
-.ftr .pg{color:#5e5e6e}
-.p{color:#9494a2;font-size:10.5pt;line-height:1.65}
-.p.hi{color:#eae6da}
-.red{color:#ff2a44}.amber{color:#f4a300}.green{color:#3ddc84}.ice{color:#9fb4d8}.dim{color:#5e5e6e}
-.row{display:flex;gap:14pt;align-items:center}
-.spread{justify-content:space-between}
-/* cards */
-.cards{display:grid;gap:10pt;flex:1;min-height:0}
-.c2{grid-template-columns:1fr 1fr}
-.c3{grid-template-columns:1fr 1fr 1fr}
-.c4{grid-template-columns:1fr 1fr 1fr 1fr}
-.card{background:#0b0b12;border:1px solid #222234;padding:14pt 15pt;position:relative;display:flex;flex-direction:column;gap:6pt;overflow:hidden}
-.card .t{font-family:'Cinzel',serif;font-weight:700;font-size:11.5pt;letter-spacing:.12em;color:#eae6da;text-transform:uppercase}
-.card .t .num{color:#ff2a44;margin-right:6pt}
-.card .d{font-size:8.5pt;color:#9494a2;line-height:1.5}
-.card .bar{position:absolute;left:0;top:0;bottom:0;width:3pt;background:#e01e37}
-.card.amber .bar{background:#f4a300}.card.green .bar{background:#3ddc84}.card.ice .bar{background:#9fb4d8}
-/* chips */
-.chips{display:flex;gap:6pt;flex-wrap:wrap}
-.chip{border:1px solid #33334a;padding:4pt 10pt;font-size:7.5pt;letter-spacing:.14em;color:#9fb4d8;text-transform:uppercase;background:#0b0b12}
-.chip.red{border-color:#7a0e1e;color:#ff2a44;background:rgba(224,30,55,.07)}
-/* stats */
-.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10pt;flex:1;min-height:0}
-.stat{background:#0b0b12;border:1px solid #222234;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6pt;position:relative;overflow:hidden}
-.stat .v{font-family:'Cinzel',serif;font-weight:900;font-size:40pt;color:#ff2a44;line-height:1}
-.stat .l{font-size:10pt;font-weight:700;letter-spacing:.16em;color:#eae6da;text-transform:uppercase;font-family:'Cinzel',serif}
-.stat .s{font-size:7.5pt;color:#5e5e6e;letter-spacing:.08em}
+.pad{padding:0.62in 0.85in 0.5in;position:relative;height:100%;display:flex;flex-direction:column}
+/* wordmark + footer */
+.wm{position:absolute;top:0.34in;left:0.85in;font-family:'PlexMono',monospace;font-size:8pt;letter-spacing:.3em;color:var(--ink)}
+.wm b{color:var(--red)}
+.wm .dot{display:inline-block;width:5pt;height:5pt;border-radius:50%;background:var(--red);margin-right:7pt;vertical-align:1pt}
+.ftr{position:absolute;left:0.85in;right:0.85in;bottom:0.3in;display:flex;justify-content:space-between;font-family:'PlexMono',monospace;font-size:7pt;letter-spacing:.24em;color:var(--muted);border-top:1px solid var(--hair);padding-top:7pt}
+.ftr .red{color:var(--red)}
+/* type */
+.kick{font-family:'PlexMono',monospace;font-size:8.5pt;letter-spacing:.32em;color:var(--red);text-transform:uppercase;margin-bottom:6pt}
+.h1{font-family:'Playfair',serif;font-weight:900;font-size:44pt;line-height:1.02;letter-spacing:-.01em;color:var(--ink)}
+.h1 .em{font-style:italic;font-weight:700;color:var(--red)}
+.lede{font-size:12.5pt;line-height:1.65;color:var(--ink2);max-width:7.4in;margin-top:12pt}
+.lede b{color:var(--ink)}
+.small{font-size:9pt;color:var(--muted);line-height:1.6}
+.mono{font-family:'PlexMono',monospace}
+/* ruled list */
+.rlist{border-top:1px solid var(--ink);margin-top:18pt;flex:1;display:flex;flex-direction:column;justify-content:flex-start}
+.ritem{display:flex;gap:18pt;align-items:baseline;border-bottom:1px solid var(--hair);padding:11pt 2pt}
+.ritem .n{font-family:'Playfair',serif;font-weight:700;font-size:17pt;color:var(--red);width:0.55in;flex-shrink:0}
+.ritem .b{flex:1}
+.ritem .t{font-family:'Playfair',serif;font-weight:700;font-size:15pt;color:var(--ink);letter-spacing:.01em}
+.ritem .d{font-size:10.5pt;color:var(--muted);margin-top:2.5pt;line-height:1.5}
+.ritem .meta{font-family:'PlexMono',monospace;font-size:8pt;color:var(--muted);letter-spacing:.12em;text-align:right;flex-shrink:0}
+/* two column */
+.two{display:flex;gap:0.7in;flex:1;min-height:0}
+.two>div{flex:1}
+/* big stat grid */
+.sgrid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0;border-top:1px solid var(--ink);margin-top:16pt;flex:1}
+.scell{padding:20pt 16pt 16pt 2pt;border-bottom:1px solid var(--hair)}
+.scell:nth-child(3n+2){padding-left:16pt}
+.scell:nth-child(3n+3){padding-left:16pt}
+.scell .v{font-family:'Playfair',serif;font-weight:900;font-size:42pt;line-height:1;color:var(--ink)}
+.scell .v em{font-style:italic;color:var(--red)}
+.scell .l{font-size:10pt;font-weight:600;letter-spacing:.02em;margin-top:8pt;color:var(--ink)}
+.scell .s{font-size:8.5pt;color:var(--muted);margin-top:3pt}
 /* check list */
-.checks{display:flex;flex-direction:column;gap:9pt}
-.check{display:flex;gap:10pt;align-items:flex-start;background:#0b0b12;border:1px solid #222234;padding:10pt 12pt}
-.check .mk{color:#3ddc84;font-size:11pt;font-weight:700}
-.check .tx{font-size:9.5pt;color:#9494a2;line-height:1.5}
+.checks{border-top:1px solid var(--ink);margin-top:14pt;display:flex;flex-direction:column}
+.check{display:flex;gap:12pt;padding:9pt 2pt;border-bottom:1px solid var(--hair);align-items:baseline}
+.check .m{font-family:'Playfair',serif;font-weight:700;color:var(--red);font-size:12pt;width:0.3in;flex-shrink:0}
+.check .tx{font-size:10.5pt;color:var(--ink2);line-height:1.5}
 /* table rows */
-.rows{display:flex;flex-direction:column;gap:9pt;flex:1;min-height:0}
-.trow{display:flex;align-items:center;gap:12pt;background:#0b0b12;border:1px solid #222234;padding:10pt 14pt}
-.trow .tag{font-size:7pt;letter-spacing:.2em;color:#ff2a44;border:1px solid #7a0e1e;padding:3pt 8pt;text-transform:uppercase}
-.trow .tt{font-family:'Cinzel',serif;font-weight:700;font-size:13pt;color:#eae6da;text-transform:uppercase;width:2.4in}
-.trow .td{font-size:8.5pt;color:#9494a2}
-/* wireframes */
-.wf{background:#07070d;border:1px solid #33334a;position:relative;overflow:hidden}
-.wf-app{display:flex;flex-direction:column}
-.wf-app .wf-top{height:22pt;border-bottom:1px solid #1e1e2e;background:#0a0a12;display:flex;align-items:center;padding:0 10pt}
-.wf-app .wf-top b{font-family:'Cinzel',serif;font-size:8pt;letter-spacing:.2em}
-.wf-app .wf-body{display:flex;flex:1;min-height:0}
-.wf-app .wf-side{width:18%;border-right:1px solid #1e1e2e;background:#0a0a12;padding:8pt 6pt;display:flex;flex-direction:column;gap:5pt}
-.wf-app .wf-side i{height:11pt;border:1px solid #1e1e2e;background:#0e0e18}
-.wf-app .wf-side i.on{border-color:#e01e37;background:rgba(224,30,55,.12)}
-.wf-app .wf-main{flex:1;padding:10pt;display:flex;flex-direction:column;gap:8pt}
-.wf-app .wf-main .t{font-family:'Cinzel',serif;font-size:9pt;letter-spacing:.14em;color:#eae6da}
-.wf-app .wf-main .ln{height:9pt;background:#10101c;border:1px solid #1e1e2e}
-.wf-app .wf-main .ln.w{width:70%}
-/* radar */
-.wf-radar{position:relative;background:#06060c;border:1px solid #33334a}
-.wf-radar .disc{position:absolute;border-radius:50%;border:1px solid rgba(224,30,55,.25)}
-.wf-radar .heat{position:absolute;border-radius:50%;background:rgba(224,30,55,.14)}
-.wf-radar .heat.a{background:rgba(244,163,0,.13)}
-.wf-radar .blip{position:absolute;width:7pt;height:7pt;border-radius:50%;background:#ff2a44;border:1px solid #ff2a44}
-.wf-radar .blip.a{background:#f4a300;border-color:#f4a300}
-.wf-radar .blip.s{background:#9494a2;border-color:#9494a2}
-.wf-radar .sweep{position:absolute;left:50%;top:50%;width:1.5pt;height:42%;background:linear-gradient(180deg,#ff2a44,rgba(255,42,68,0));transform-origin:top;transform:rotate(0deg)}
-.wf-radar .info{position:absolute;right:7pt;top:7pt;width:32%;background:#0a0a12;border:1px solid #222234;padding:8pt}
-.wf-radar .info b{font-family:'Cinzel',serif;font-size:7pt;letter-spacing:.16em;color:#ff2a44}
-.wf-radar .info .l{height:6pt;background:#14141f;margin-top:5pt}
-.wf-radar .cap{position:absolute;left:8pt;bottom:7pt;font-size:6pt;letter-spacing:.2em;color:#3a3a4a;text-transform:uppercase}
-/* kanban */
-.wf-kan{display:flex;gap:7pt}
-.wf-kan .col{flex:1;background:#08080e;border:1px solid #1e1e2e;padding:7pt;display:flex;flex-direction:column;gap:6pt}
-.wf-kan .col h{font-size:6pt;letter-spacing:.14em;color:#5e5e6e;text-transform:uppercase;border-bottom:1px solid #1e1e2e;padding-bottom:4pt}
-.wf-kan .cd{height:34pt;background:#0e0e16;border:1px solid #33334a;border-left:3pt solid #ff2a44}
-.wf-kan .cd.a{border-left-color:#f4a300}.wf-kan .cd.g{border-left-color:#3ddc84}
-/* terminal */
-.wf-term{background:#04040a;border:1px solid #33334a;padding:10pt 12pt;font-size:7pt;line-height:1.8;color:#9494a2}
-.wf-term b{font-family:'Cinzel',serif;font-size:8pt;letter-spacing:.2em;color:#eae6da}
-.wf-term .g{color:#3ddc84}.wf-term .r{color:#ff2a44}.wf-term .a{color:#f4a300}
-/* chat */
-.wf-chat{background:#07070d;border:1px solid #33334a;padding:9pt 10pt;display:flex;flex-direction:column;gap:6pt}
-.wf-chat b{font-family:'Cinzel',serif;font-size:8pt;letter-spacing:.18em}
-.wf-chat .m{align-self:flex-start;max-width:70%;background:#0e0e16;border:1px solid #33334a;padding:7pt 9pt;font-size:7pt;color:#eae6da}
-.wf-chat .m.mine{align-self:flex-end;border-color:#5a101c;background:rgba(224,30,55,.1)}
-.wf-chat .in{border:1px solid #222234;background:#0a0a12;padding:6pt 8pt;font-size:6.5pt;color:#3a3a4a;margin-top:auto}
-/* broadcast */
-.wf-bcast{background:#07070d;border:1px solid #33334a;padding:9pt 10pt;display:flex;flex-direction:column;gap:7pt}
-.wf-bcast b{font-family:'Cinzel',serif;font-size:8pt;letter-spacing:.18em}
-.wf-bcast .paper{background:#0b0b12;border:1px solid #1e1e2e;padding:10pt;font-size:7.5pt;color:#9494a2;line-height:1.7;flex:1}
-.wf-bcast .send{align-self:center;border:1px solid #e01e37;background:rgba(224,30,55,.1);color:#eae6da;font-size:7.5pt;letter-spacing:.2em;padding:6pt 18pt;text-transform:uppercase;font-family:'Cinzel',serif}
-/* steps */
-.steps{display:grid;grid-template-columns:1fr 1fr;gap:7pt;flex:1;min-height:0;align-content:start}
-.step{display:flex;gap:9pt;align-items:center;background:#0b0b12;border:1px solid #222234;padding:8pt 11pt}
-.step .n{width:20pt;height:20pt;border:1px solid #e01e37;color:#ff2a44;font-size:9pt;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-weight:700}
-.step .tx b{font-family:'Cinzel',serif;font-size:9.5pt;letter-spacing:.12em;color:#eae6da;text-transform:uppercase}
-.step .tx s{display:block;font-size:7.5pt;color:#9494a2}
-/* renders grid */
-.rgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:9pt;flex:1;min-height:0}
-.rcell{border:1px solid #222234;background:#0b0b12;overflow:hidden;display:flex;flex-direction:column}
+.trows{border-top:1px solid var(--ink);margin-top:14pt;display:flex;flex-direction:column}
+.trow{display:flex;align-items:baseline;gap:14pt;padding:10pt 2pt;border-bottom:1px solid var(--hair)}
+.trow .tag{font-family:'PlexMono',monospace;font-size:7.5pt;letter-spacing:.2em;color:var(--red);width:0.9in;flex-shrink:0}
+.trow .tt{font-family:'Playfair',serif;font-weight:700;font-size:14pt;width:2.3in;flex-shrink:0}
+.trow .td{font-size:10pt;color:var(--muted)}
+/* cover */
+.cover{height:100%;display:flex;flex-direction:column;justify-content:space-between;padding:0.55in 0.85in 0.5in;position:relative}
+.cover .top{display:flex;justify-content:space-between;align-items:flex-start}
+.cover .top .r{display:flex;gap:14pt;align-items:center}
+.cover .big{font-family:'Playfair',serif;font-weight:900;font-size:88pt;line-height:.94;letter-spacing:-.02em;color:var(--ink)}
+.cover .big .em{font-style:italic;font-weight:700;color:var(--red)}
+.cover .sub{font-size:13pt;letter-spacing:.02em;color:var(--ink2);margin-top:14pt;max-width:6in;line-height:1.5}
+.cover .rule{width:2.6in;height:2pt;background:var(--red);margin:14pt 0}
+.cover .bot{display:flex;justify-content:space-between;align-items:flex-end;border-top:1px solid var(--ink);padding-top:12pt}
+.cover .bot .l{font-family:'PlexMono',monospace;font-size:7.5pt;letter-spacing:.2em;color:var(--muted);text-transform:uppercase;line-height:1.9}
+.cover .bot .l b{color:var(--ink)}
+.sigil{width:64pt;height:64pt}
+/* dark plates */
+.dark{background:var(--plate);color:var(--cream)}
+.dark .bgimg{position:absolute;inset:0;background-size:cover;background-position:center;opacity:.5}
+.dark .veil{position:absolute;inset:0;background:linear-gradient(180deg,rgba(18,16,12,.92) 0%,rgba(18,16,12,.55) 55%,rgba(18,16,12,.95) 100%)}
+.dark .pad{position:relative;z-index:2}
+.dark .h1{color:var(--cream)}
+.dark .lede{color:#C9C2B4}
+.dark .lede b{color:var(--cream)}
+.dark .kick{color:var(--red)}
+.dark .ritem .t{color:var(--cream)}
+.dark .ritem .d{color:#A9A294}
+.dark .ftr{border-color:#2E2A22;color:#8A8274}
+.dark .wm{color:#C9C2B4}
+/* render grid (dark plate) */
+.rgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:10pt;flex:1;min-height:0;margin-top:14pt}
+.rcell{background:#1B1813;overflow:hidden;display:flex;flex-direction:column}
 .rcell img{width:100%;flex:1;object-fit:cover;min-height:0}
-.rcell .cap{font-size:6.5pt;letter-spacing:.18em;color:#5e5e6e;text-transform:uppercase;padding:5pt 8pt;border-top:1px solid #1e1e2e;text-align:center}
-/* swatches */
-.sws{display:grid;grid-template-columns:repeat(5,1fr);gap:8pt}
-.sw{height:58pt;border:1px solid #33334a;padding:5pt 7pt;display:flex;flex-direction:column;justify-content:flex-end;font-size:6.5pt;color:#eae6da;text-shadow:0 1px 3px #000}
-.sw small{font-size:5.5pt;opacity:.75;letter-spacing:.08em}
+.rcell .cap{font-family:'PlexMono',monospace;font-size:6.5pt;letter-spacing:.2em;color:#A9A294;text-transform:uppercase;padding:5pt 8pt;text-align:center;border-top:1px solid #2E2A22}
+/* swatches (light) */
+.sws{display:grid;grid-template-columns:repeat(5,1fr);gap:10pt;margin-top:16pt}
+.sw{height:64pt;border:1px solid var(--hair);padding:6pt 8pt;display:flex;flex-direction:column;justify-content:flex-end;font-family:'PlexMono',monospace;font-size:6.5pt}
+.sw small{font-size:5.5pt;opacity:.7;letter-spacing:.08em;display:block;margin-top:2pt}
+/* type specimens */
+.tspec{margin-top:18pt;border-top:1px solid var(--ink);padding-top:14pt;display:flex;gap:0.6in}
+.tspec>div{flex:1}
+.tspec .lab{font-family:'PlexMono',monospace;font-size:7pt;letter-spacing:.24em;color:var(--muted);text-transform:uppercase;margin-bottom:8pt}
+.tspec .sample1{font-family:'Playfair',serif;font-weight:900;font-size:30pt;color:var(--ink)}
+.tspec .sample1 em{color:var(--red);font-style:italic}
+.tspec .sample2{font-size:12pt;color:var(--ink2);font-weight:500}
+.tspec .sample3{font-family:'PlexMono',monospace;font-size:9.5pt;color:var(--muted)}
 /* team */
-.team{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12pt;flex:1;min-height:0}
-.member{background:#0b0b12;border:1px solid #222234;display:flex;flex-direction:column;align-items:center;text-align:center;padding:20pt 16pt;gap:7pt;position:relative;overflow:hidden}
-.member .bar{position:absolute;top:0;left:0;right:0;height:3pt;background:linear-gradient(90deg,#e01e37,#7a0e1e)}
-.member .ava{width:64pt;height:64pt;border-radius:50%;border:1.5pt solid #e01e37;display:flex;align-items:center;justify-content:center;font-family:'Cinzel',serif;font-size:18pt;color:#ff2a44;background:radial-gradient(circle at 30% 30%,#161624,#07070c)}
-.member .nm{font-family:'Cinzel',serif;font-weight:700;font-size:13pt;letter-spacing:.1em;text-transform:uppercase}
-.member .rl{font-size:6.5pt;letter-spacing:.22em;color:#ff2a44;text-transform:uppercase}
-.member .bio{font-size:8pt;color:#9494a2;line-height:1.6}
+.team{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0;border-top:1px solid var(--ink);margin-top:16pt;flex:1}
+.tm{padding:22pt 20pt 16pt 0;border-bottom:1px solid var(--hair)}
+.tm+.tm{padding-left:20pt;border-left:1px solid var(--hair)}
+.tm .ini{font-family:'Playfair',serif;font-weight:700;font-size:13pt;color:var(--red);letter-spacing:.14em}
+.tm .nm{font-family:'Playfair',serif;font-weight:800;font-size:17pt;margin-top:10pt;color:var(--ink)}
+.tm .rl{font-family:'PlexMono',monospace;font-size:7.5pt;letter-spacing:.2em;color:var(--muted);text-transform:uppercase;margin-top:5pt}
+.tm .bio{font-size:9.5pt;color:var(--ink2);line-height:1.6;margin-top:10pt}
+/* steps */
+.steps{display:grid;grid-template-columns:1fr 1fr;gap:0 0.5in;border-top:1px solid var(--ink);margin-top:14pt;flex:1;align-content:start}
+.step{display:flex;gap:12pt;padding:9pt 2pt;border-bottom:1px solid var(--hair);align-items:baseline}
+.step .n{font-family:'Playfair',serif;font-weight:700;font-size:13pt;color:var(--red);width:0.42in;flex-shrink:0}
+.step .tx b{font-family:'Playfair',serif;font-size:12.5pt;color:var(--ink)}
+.step .tx s{display:block;font-size:9pt;color:var(--muted);margin-top:2pt}
+/* stamp */
+.stamp{position:absolute;right:0.85in;top:1.05in;border:1.5pt solid var(--red);color:var(--red);font-family:'PlexMono',monospace;font-size:9pt;letter-spacing:.24em;padding:6pt 14pt;transform:rotate(4deg);text-transform:uppercase;opacity:.85}
+/* cmp */
+.cmp{display:grid;grid-template-columns:1fr 1fr;gap:0.6in;flex:1;min-height:0;margin-top:16pt}
+.cmp .side{border-top:1px solid var(--ink);padding-top:14pt}
+.cmp .side h3{font-family:'Playfair',serif;font-weight:800;font-size:17pt;margin-bottom:14pt}
+.cmp .side.win h3{color:var(--red)}
+.cmp .it{display:flex;gap:10pt;padding:8pt 0;border-bottom:1px solid var(--hair);align-items:baseline}
+.cmp .it .m{font-family:'Playfair',serif;font-weight:700;font-size:12pt;width:0.3in;flex-shrink:0}
+.cmp .it .x{font-size:10.5pt;color:var(--ink2)}
+.cmp .lose .m{color:#B9B2A4}
+.cmp .lose .x{color:var(--muted)}
 /* roadmap */
-.road{display:flex;flex-direction:column;gap:10pt;flex:1;min-height:0;justify-content:center}
-.road .step2{display:flex;gap:12pt;align-items:center;background:#0b0b12;border:1px solid #222234;padding:12pt 16pt}
-.road .step2 .n{width:24pt;height:24pt;border:1px solid #e01e37;color:#ff2a44;font-size:11pt;display:flex;align-items:center;justify-content:center;font-weight:700}
-.road .step2 .tx b{font-family:'Cinzel',serif;font-size:12pt;letter-spacing:.12em;text-transform:uppercase;color:#eae6da}
-.road .step2 .tx s{display:block;font-size:8.5pt;color:#9494a2;margin-top:2pt}
-/* sigil */
-.sigil{width:120pt;height:120pt;filter:drop-shadow(0 0 22pt rgba(224,30,55,.5))}
-.sigil.sm{width:70pt;height:70pt}
-.sigil.lg{width:150pt;height:150pt}
-.center{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;flex:1;position:relative}
-/* compare */
-.cmp{display:grid;grid-template-columns:1fr 1fr;gap:12pt;flex:1;min-height:0}
-.cmp .side{background:#0b0b12;border:1px solid #222234;padding:16pt;display:flex;flex-direction:column;gap:10pt}
-.cmp .side.win{border-color:#e01e37;background:rgba(224,30,55,.04)}
-.cmp .side h3{font-family:'Cinzel',serif;font-size:13pt;letter-spacing:.14em;text-transform:uppercase}
-.cmp .side.win h3{color:#ff2a44}
-.cmp .side .it{display:flex;gap:9pt;align-items:flex-start}
-.cmp .side .it .m{font-size:11pt;font-weight:700}
-.cmp .side .it .x{color:#5e5e6e;font-size:9pt;line-height:1.5}
-.cmp .side.win .it .x{color:#eae6da}
-.cover-title{font-family:'Cinzel',serif;font-weight:900;font-size:58pt;letter-spacing:.24em;text-indent:.24em;color:#eae6da;text-shadow:0 0 60pt rgba(224,30,55,.5)}
-.cover-sub{font-size:12pt;letter-spacing:.42em;text-indent:.42em;color:#ff2a44;font-weight:700;text-transform:uppercase;margin-top:12pt}
-.cover-line{width:5.2in;height:1px;background:linear-gradient(90deg,transparent,#e01e37,transparent);margin:20pt auto}
-.cover-meta{font-size:9pt;letter-spacing:.24em;color:#5e5e6e;text-transform:uppercase;line-height:2}
+.road{border-top:1px solid var(--ink);margin-top:16pt;flex:1;display:flex;flex-direction:column;justify-content:center}
+.road .r2{display:flex;gap:14pt;align-items:baseline;padding:13pt 2pt;border-bottom:1px solid var(--hair)}
+.road .r2 .n{font-family:'Playfair',serif;font-weight:700;font-size:15pt;color:var(--red);width:0.6in;flex-shrink:0}
+.road .r2 .tx b{font-family:'Playfair',serif;font-weight:700;font-size:15pt;color:var(--ink)}
+.road .r2 .tx s{display:block;font-size:10pt;color:var(--muted);margin-top:2pt}
 `;
 
-const SIGIL = `<svg class="sigil" viewBox="0 0 100 100"><defs><radialGradient id="g" cx="50%" cy="50%" r="60%"><stop offset="0%" stop-color="#ff2a44"/><stop offset="70%" stop-color="#7a0e1e"/><stop offset="100%" stop-color="#2a050c"/></radialGradient></defs><path d="M50 3 61 24 84 16 76 39 97 50 76 61 84 84 61 76 50 97 39 76 16 84 24 61 3 50 24 39 16 16 39 24z" fill="url(#g)" stroke="#e01e37" stroke-width="1.5"/><circle cx="50" cy="50" r="16" fill="none" stroke="#eae6da" stroke-width="2"/><circle cx="50" cy="50" r="7" fill="#e01e37"/></svg>`;
-const SIGIL_SM = SIGIL.replace('class="sigil"', 'class="sigil sm"');
+const SIGIL = `<svg class="sigil" viewBox="0 0 100 100"><path d="M50 3 61 24 84 16 76 39 97 50 76 61 84 84 61 76 50 97 39 76 16 84 24 61 3 50 24 39 16 16 39 24z" fill="none" stroke="#B00E27" stroke-width="2.5"/><circle cx="50" cy="50" r="15" fill="none" stroke="#1A1611" stroke-width="1.5"/><circle cx="50" cy="50" r="6" fill="#B00E27"/></svg>`;
 
-const header = (k, t1, acc) => `
-  <div class="kicker">${k}</div>
-  <div class="kbar"></div>
-  <div class="t1">${t1}${acc ? ` <span class="accent">${acc}</span>` : ""}</div>
-  <div class="hrule"></div>`;
-
-const footer = (sec, n) => `
-  <div class="ftr"><span>OBSIDIAN · ${sec}</span><span class="pg">${String(n).padStart(2, "0")}</span></div>`;
+const wm = `<div class="wm"><span class="dot"></span>OBSIDIAN <b>·</b> SECURITY NETWORK</div>`;
+const footer = (sec, n, dark = false) => `
+  <div class="ftr"><span>${sec}</span><span>CONFIDENTIAL — ${String(n).padStart(2, "0")} / 13</span><span class="red">THE HUNT NEVER ENDS</span></div>`;
 
 const slides = [];
 
-/* 01 — COVER */
+/* 01 — COVER (light editorial) */
 slides.push(`
 <div class="slide">
-  <div class="bgimg" style="background-image:${bg("sigil.png")}"></div>
-  <div class="veil"></div>
-  <div class="center">
-    ${SIGIL.replace('class="sigil"', 'class="sigil lg"')}
-    <div class="cover-title">OBSIDIAN</div>
-    <div class="cover-sub">The Empire's Nervous System</div>
-    <div class="cover-line"></div>
-    <div class="cover-meta">A classified command portal for the post-Order-66 hunt<br/>Anuj Phulera · Aarav Choudhary · Jeehaan Kwatra<br/>TS '26 Creative Prelims · Path 2 — The Empire</div>
-  </div>
+    <div class="cover">
+      <div class="top">
+        <div class="wm" style="position:static"><span class="dot"></span>OBSIDIAN <b>·</b> SECURITY NETWORK</div>
+        <div class="r"><span class="mono" style="font-size:8pt;letter-spacing:.24em;color:var(--muted)">TS '26 · CREATIVE PRELIMS</span>${SIGIL}</div>
+      </div>
+      <div>
+        <div class="big">OBSIDIAN<br/><span class="em">The nervous system</span></div>
+        <div class="rule"></div>
+        <div class="sub">A classified command portal for the post-Order-66 hunt — tracking, planning, communication and counter-recruitment, coordinated into one organism.</div>
+      </div>
+      <div class="bot">
+        <div class="l"><b>Anuj Phulera</b> · <b>Aarav Choudhary</b> · <b>Jeehaan Kwatra</b><br/>Path 2 — The Empire · Imperial Security Network</div>
+        <div class="l" style="text-align:right">PASSPHRASE: FOR THE EMPIRE<br/>CLEARANCE ALPHA-7</div>
+      </div>
+    </div>
 </div>`);
 
 /* 02 — PROBLEM */
 slides.push(`
-<div class="slide">
-  <div class="pad">
-    ${header("The Problem", "The galaxy is", "scattered.")}
-    <div class="row" style="gap:26pt;flex:1;min-height:0;align-items:stretch">
-      <div style="flex:1;display:flex;flex-direction:column;gap:10pt">
-        <p class="hi" style="font-size:12pt;line-height:1.7">Order 66 fell. Hundreds of Jedi survive across a thousand worlds — rebuilding, recruiting, learning to vanish.</p>
-        <p style="font-size:10pt">The Empire has legions — but no eyes.</p>
-        <div class="chips" style="margin-top:auto">
-          <span class="chip red">9 targets</span><span class="chip">10 sectors</span><span class="chip">6 hunters</span><span class="chip red">0 coordination</span>
-        </div>
-      </div>
-      <div class="cards c2" style="flex:1.4">
-        <div class="card"><div class="bar"></div><div class="t">Fragmented Intel</div><div class="d">reports filed into a void — no single picture of the galaxy</div></div>
-        <div class="card amber"><div class="bar"></div><div class="t">Isolated Hunters</div><div class="d">six Inquisitors, six separate hunts — no shared channel</div></div>
-        <div class="card amber"><div class="bar"></div><div class="t">No Recruit Defense</div><div class="d">the Order recruits through refugee networks, unchecked</div></div>
-        <div class="card"><div class="bar"></div><div class="t">No Decision Layer</div><div class="d">sightings sit in ledgers while targets slip away</div></div>
-      </div>
-    </div>
-    ${footer("Problem", 2)}
+<div class="slide"><div class="pad">
+  ${wm}
+  <div class="kick">01 — The Problem</div>
+  <div class="h1">The galaxy is <span class="em">scattered.</span></div>
+  <div class="lede">Order 66 fell. Hundreds of Jedi survive across a thousand worlds — rebuilding, recruiting, learning to vanish. The Empire has legions, but no eyes.</div>
+  <div class="rlist">
+    <div class="ritem"><div class="n">I.</div><div class="b"><div class="t">Fragmented intelligence</div><div class="d">Reports are filed into a void. No single picture of the galaxy exists.</div></div><div class="meta">10 SECTORS · 0 GRID</div></div>
+    <div class="ritem"><div class="n">II.</div><div class="b"><div class="t">Isolated hunters</div><div class="d">Six Inquisitors, six separate hunts. No shared channel, no joint doctrine.</div></div><div class="meta">6 HUNTERS · 0 CHANNEL</div></div>
+    <div class="ritem"><div class="n">III.</div><div class="b"><div class="t">Open recruitment lanes</div><div class="d">The Order recruits through refugee networks — and nothing intercepts them.</div></div><div class="meta">RECRUITMENT · LIVE</div></div>
+    <div class="ritem"><div class="n">IV.</div><div class="b"><div class="t">No decision layer</div><div class="d">Sightings sit in ledgers while targets slip away. Intel never becomes action.</div></div><div class="meta">INTEL → VOID</div></div>
   </div>
-</div>`);
+  ${footer("The Problem", 2)}
+</div></div>`);
 
 /* 03 — SOLUTION */
 slides.push(`
-<div class="slide">
-  <div class="pad">
-    ${header("The Solution", "One nervous", "system.")}
-    <p style="font-size:11pt;line-height:1.6;margin-bottom:16pt">OBSIDIAN turns a disorganized purge into a single hunting organism — every sector, probe and citizen a sensor in the Emperor's hand.</p>
-    <div class="cards c4" style="flex:1">
-      <div class="card"><div class="bar"></div><div class="t" style="font-size:24pt;color:#ff2a44">01</div><div class="t">Track</div><div class="d">radar, probes, sightings — one live grid</div></div>
-      <div class="card"><div class="bar"></div><div class="t" style="font-size:24pt;color:#ff2a44">02</div><div class="t">Plan</div><div class="d">intel escalates into dispatch — one board</div></div>
-      <div class="card"><div class="bar"></div><div class="t" style="font-size:24pt;color:#ff2a44">03</div><div class="t">Command</div><div class="d">every Inquisitor on one encrypted channel</div></div>
-      <div class="card"><div class="bar"></div><div class="t" style="font-size:24pt;color:#ff2a44">04</div><div class="t">Disrupt</div><div class="d">counter-recruitment at broadcast scale</div></div>
-    </div>
-    <div class="row spread" style="margin-top:14pt">
-      <span class="chip red">Passphrase Gate</span><span style="color:#5e5e6e">→</span><span class="chip">Typed Boot</span><span style="color:#5e5e6e">→</span><span class="chip">Clearance Alpha-7</span><span style="color:#5e5e6e">→</span><span class="chip red">Full Network</span>
-    </div>
-    ${footer("Solution", 3)}
+<div class="slide"><div class="pad">
+  ${wm}
+  <div class="kick">02 — The Solution</div>
+  <div class="h1">One nervous <span class="em">system.</span></div>
+  <div class="lede">OBSIDIAN fuses a disorganized purge into a single hunting organism — every sector, probe and citizen becomes a sensor in the Emperor's hand.</div>
+  <div class="rlist">
+    <div class="ritem"><div class="n">01</div><div class="b"><div class="t">Track</div><div class="d">Live radar of ten sectors, probe drops, sighting logs — one grid.</div></div><div class="meta">GALAXY TRACKER</div></div>
+    <div class="ritem"><div class="n">02</div><div class="b"><div class="t">Plan</div><div class="d">Intel escalates into dispatch. One board, from planning to containment.</div></div><div class="meta">OPERATIONS</div></div>
+    <div class="ritem"><div class="n">03</div><div class="b"><div class="t">Command</div><div class="d">Every Inquisitor on one encrypted channel, answering in character.</div></div><div class="meta">UPLINK</div></div>
+    <div class="ritem"><div class="n">04</div><div class="b"><div class="t">Disrupt</div><div class="d">Sector-wide broadcasts that starve the Order of recruits.</div></div><div class="meta">INTERDICTION</div></div>
   </div>
-</div>`);
+  <div class="mono" style="font-size:8pt;letter-spacing:.2em;color:var(--muted);margin-top:12pt">ACCESS: PASSPHRASE GATE → TYPED BOOT → CLEARANCE ALPHA-7 → FULL NETWORK</div>
+  ${footer("The Solution", 3)}
+</div></div>`);
 
 /* 04 — WHY NOW */
 slides.push(`
-<div class="slide">
-  <div class="pad">
-    ${header("Why Now · The Moment", "The window is", "open.")}
-    <div class="row" style="gap:24pt;flex:1;min-height:0;align-items:stretch">
-      <div style="flex:1;display:flex;flex-direction:column;gap:8pt">
-        <p style="font-size:10.5pt;line-height:1.65">The brief hands us the moment: post-Order 66, survivors scattered, Empire uncoordinated. Whoever builds the nervous system first wins the galaxy.</p>
+<div class="slide"><div class="pad">
+  ${wm}
+  <div class="kick">03 — Why Now</div>
+  <div class="h1">The window is <span class="em">open.</span></div>
+  <div class="two" style="margin-top:14pt">
+    <div>
+      <div class="lede" style="margin-top:0">The brief hands us the moment: survivors scattered, Empire uncoordinated. Whoever builds the nervous system first wins the galaxy.</div>
+      <div class="trows">
         <div class="trow"><span class="tag">TAM</span><span class="tt">The Galaxy</span><span class="td">a thousand worlds, unchecked</span></div>
-        <div class="trow"><span class="tag" style="color:#f4a300;border-color:#6b4a08">SAM</span><span class="tt">The Empire</span><span class="td">ten sectors, eight legions</span></div>
-        <div class="trow"><span class="tag" style="color:#eae6da;border-color:#33334a">SOM</span><span class="tt">The Hunt</span><span class="td">nine classified targets, now</span></div>
-      </div>
-      <div style="flex:1.1;display:flex;flex-direction:column;gap:8pt">
-        <div class="kicker" style="font-size:8.5pt">Why OBSIDIAN Wins The Window</div>
-        <div class="checks">
-          <div class="check"><span class="mk">✓</span><span class="tx">Demoable live — judges operate it, not read about it</span></div>
-          <div class="check"><span class="mk">✓</span><span class="tx">Original — zero canon, zero templates, zero stock</span></div>
-          <div class="check"><span class="mk">✓</span><span class="tx">Complete — app, deck, film, 3D, design system</span></div>
-          <div class="check"><span class="mk">✓</span><span class="tx">Offline-first — runs anywhere, forever</span></div>
-        </div>
+        <div class="trow"><span class="tag" style="color:var(--muted)">SAM</span><span class="tt">The Empire</span><span class="td">ten sectors, eight legions</span></div>
+        <div class="trow"><span class="tag" style="color:var(--ink)">SOM</span><span class="tt">The Hunt</span><span class="td">nine classified targets — now</span></div>
       </div>
     </div>
-    ${footer("Why Now", 4)}
+    <div>
+      <div class="kick" style="font-size:7.5pt">Why OBSIDIAN wins</div>
+      <div class="checks">
+        <div class="check"><span class="m">✓</span><span class="tx">Demoable live — judges operate it, they don't read about it</span></div>
+        <div class="check"><span class="m">✓</span><span class="tx">Original — zero canon, zero templates, zero stock assets</span></div>
+        <div class="check"><span class="m">✓</span><span class="tx">Complete — app, deck, film, 3D engine, design system</span></div>
+        <div class="check"><span class="m">✓</span><span class="tx">Offline-first — runs anywhere, forever</span></div>
+      </div>
+    </div>
   </div>
-</div>`);
+  ${footer("Why Now", 4)}
+</div></div>`);
 
-/* 05 — PRODUCT */
+/* 05 — PRODUCT (12 modules, ruled two-col list) */
 slides.push(`
-<div class="slide">
-  <div class="pad">
-    ${header("The Product", "Twelve modules.", "One hunt.")}
-    <div class="cards c3" style="flex:1">
-      ${["Command Deck|hero status board","Galaxy Tracker|radar + probe drops","Wanted Dossiers|9 psychoprofiled targets","Intelligence|probe / ISB feed","Operations|kanban hunt dispatch","Interdiction|propaganda studio","Inquisitor Uplink|encrypted comms","Imperial Archive|7 lore documents","Terminal|working mainframe shell","Manifesto|the Emperor's case","Hunt Metrics|purge completion","Standards|in-app design system"].map((x, i) => {
-        const [t, d] = x.split("|");
-        return `<div class="card"><div class="t"><span class="num">${String(i + 1).padStart(2, "0")}</span>${t}</div><div class="d">${d}</div></div>`;
-      }).join("")}
+<div class="slide"><div class="pad">
+  ${wm}
+  <div class="kick">04 — The Product</div>
+  <div class="h1">Twelve modules. <span class="em">One hunt.</span></div>
+  <div class="lede" style="margin-bottom:6pt">Every module is live and operable — this is the product, not a concept.</div>
+  <div class="two" style="margin-top:6pt;gap:0.8in">
+    <div class="rlist" style="margin-top:8pt">
+      ${["Command Deck","Galaxy Tracker","Wanted Dossiers","Intelligence","Operations","Interdiction"].map((t, i) => `
+        <div class="ritem"><div class="n" style="font-size:13pt;width:0.4in">${String(i + 1).padStart(2, "0")}</div><div class="b"><div class="t" style="font-size:13pt">${t}</div><div class="d" style="font-size:9pt">${["hero status board","radar + probe drops","9 psychoprofiled targets","probe / ISB feed","kanban dispatch","propaganda studio"][i]}</div></div></div>`).join("")}
     </div>
-    <div class="kicker" style="text-align:center;margin-top:12pt;font-size:8pt;color:#5e5e6e">EVERY MODULE IS LIVE AND OPERABLE — NOT A MOCKUP</div>
-    ${footer("Product", 5)}
+    <div class="rlist" style="margin-top:8pt">
+      ${["Inquisitor Uplink","Imperial Archive","Terminal","Manifesto","Hunt Metrics","Standards"].map((t, i) => `
+        <div class="ritem"><div class="n" style="font-size:13pt;width:0.4in">${String(i + 7).padStart(2, "0")}</div><div class="b"><div class="t" style="font-size:13pt">${t}</div><div class="d" style="font-size:9pt">${["encrypted comms","7 lore documents","working mainframe shell","the Emperor's case","purge completion","in-app design system"][i]}</div></div></div>`).join("")}
+    </div>
   </div>
-</div>`);
+  ${footer("The Product", 5)}
+</div></div>`);
 
 /* 06 — JOURNEY */
 slides.push(`
-<div class="slide">
-  <div class="pad">
-    ${header("The Product · Journey", "Three minutes to", "demonstrate it all.")}
-    <div class="row" style="gap:24pt;flex:1;min-height:0;align-items:stretch">
-      <div style="flex:1.4;display:flex;flex-direction:column;gap:9pt">
-        <div class="wf wf-app" style="flex:1">
-          <div class="wf-top"><b>OBSIDIAN</b></div>
-          <div class="wf-body">
-            <div class="wf-side"><i class="on"></i><i></i><i></i><i></i></div>
-            <div class="wf-main">
-              <div class="t">GALAXY TRACKER</div>
-              <div class="wf wf-radar" style="flex:1">
-                <div class="heat" style="left:12%;top:12%;width:22%;height:44%"></div>
-                <div class="heat a" style="left:34%;top:52%;width:16%;height:32%"></div>
-                <div class="sweep"></div>
-                <div class="blip" style="left:18%;top:24%"></div>
-                <div class="blip" style="left:32%;top:16%"></div>
-                <div class="blip a" style="left:26%;top:48%"></div>
-                <div class="blip a" style="left:48%;top:44%"></div>
-                <div class="blip s" style="left:56%;top:22%"></div>
-                <div class="info"><b>SIGHTING</b><div class="l"></div><div class="l"></div><div class="l"></div></div>
-                <div class="cap">RADAR SWEEP · LIVE</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div style="flex:1;display:flex;flex-direction:column;gap:7pt">
-        <div class="kicker" style="font-size:8.5pt">9-Step Demo</div>
-        <div class="steps">
-          ${["Gate|click to initialize","Boot|typed sequence, beeps","Passphrase|FOR THE EMPIRE","Deck|giant hero + live HUD","Tracker|click a blip → dossier","Ops|drag card to ACTIVE","Terminal|cat targets.log","Standards|the design system"].map((x, i) => {
-            const [t, d] = x.split("|");
-            return `<div class="step"><div class="n">${i + 1}</div><div class="tx"><b>${t}</b><s>${d}</s></div></div>`;
-          }).join("")}
-        </div>
-      </div>
-    </div>
-    ${footer("Product", 6)}
+<div class="slide"><div class="pad">
+  ${wm}
+  <div class="kick">05 — The Journey</div>
+  <div class="h1">Three minutes to <span class="em">demonstrate it all.</span></div>
+  <div class="lede">A nine-step demo that takes a judge from the gate to the design system — everything real, everything clickable.</div>
+  <div class="steps">
+    ${["Gate — click to initialize","Boot — typed sequence, beeps","Passphrase — FOR THE EMPIRE","Command Deck — hero + live HUD","Galaxy Tracker — click a blip","Operations — drag card to ACTIVE","Terminal — cat targets.log","Standards — the design system"].map((x, i) => {
+      const [t, d] = x.split(" — ");
+      return `<div class="step"><div class="n">${i + 1}</div><div class="tx"><b>${t}</b><s>${d}</s></div></div>`;
+    }).join("")}
   </div>
-</div>`);
+  ${footer("The Journey", 6)}
+</div></div>`);
 
 /* 07 — PROOF */
 slides.push(`
-<div class="slide">
-  <div class="pad">
-    ${header("Proof · Traction", "Built,", "not promised.")}
-    <div class="stats">
-      ${[["12", "Working Modules", "one login, one network"], ["9", "Original Jedi", "psychoprofiled"], ["8", "3D Scenes", "custom raytracer"], ["62s", "Promo Film", "original score"], ["100+", "Intel Reports", "generated live"], ["0", "External Assets", "everything in-house"]].map(([v, l, s]) => `
-        <div class="stat"><div class="v">${v}</div><div class="l">${l}</div><div class="s">${s}</div></div>`).join("")}
-    </div>
-    <div class="row spread" style="margin-top:14pt">
-      <span class="chip red">Terminal runs a real filesystem</span>
-      <span class="chip">Inquisitors reply in-character</span>
-      <span class="chip red">Board drags &amp; drops</span>
-      <span class="chip">Film assembled by pipeline</span>
-    </div>
-    ${footer("Proof", 7)}
+<div class="slide"><div class="pad">
+  ${wm}
+  <div class="kick">06 — Proof</div>
+  <div class="h1">Built, <span class="em">not promised.</span></div>
+  <div class="sgrid">
+    ${[["12", "Working modules", "one login, one network"], ["9", "Original Jedi", "psychoprofiled"], ["8", "3D scenes", "custom raytracer"], ["62s", "Promo film", "original score"], ["100+", "Intel reports", "generated live"], ["0", "External assets", "everything in-house"]].map(([v, l, s]) => `
+      <div class="scell"><div class="v">${v}</div><div class="l">${l}</div><div class="s">${s}</div></div>`).join("")}
   </div>
-</div>`);
+  <div class="mono" style="font-size:8pt;letter-spacing:.18em;color:var(--muted);margin-top:12pt">THE TERMINAL RUNS A REAL FILESYSTEM · INQUISITORS REPLY IN CHARACTER · THE BOARD DRAGS</div>
+  ${footer("Proof", 7)}
+</div></div>`);
 
 /* 08 — COMPETITION */
 slides.push(`
-<div class="slide">
-  <div class="pad">
-    ${header("Competitive Landscape", "The old way", "vs. the network.")}
-    <div class="cmp">
-      <div class="side">
-        <h3 style="color:#5e5e6e">THE OLD EMPIRE</h3>
-        <div class="it"><span class="m" style="color:#5e5e6e">✗</span><span class="x">reports vanish into ledgers</span></div>
-        <div class="it"><span class="m" style="color:#5e5e6e">✗</span><span class="x">six hunters, six separate hunts</span></div>
-        <div class="it"><span class="m" style="color:#5e5e6e">✗</span><span class="x">recruitment lanes wide open</span></div>
-        <div class="it"><span class="m" style="color:#5e5e6e">✗</span><span class="x">sightings never become strikes</span></div>
-      </div>
-      <div class="side win">
-        <h3>OBSIDIAN</h3>
-        <div class="it"><span class="m" style="color:#3ddc84">✓</span><span class="x">one live galactic grid</span></div>
-        <div class="it"><span class="m" style="color:#3ddc84">✓</span><span class="x">one encrypted channel, one doctrine</span></div>
-        <div class="it"><span class="m" style="color:#3ddc84">✓</span><span class="x">counter-recruitment broadcasts</span></div>
-        <div class="it"><span class="m" style="color:#3ddc84">✓</span><span class="x">intel escalates into hunts</span></div>
-      </div>
+<div class="slide"><div class="pad">
+  ${wm}
+  <div class="kick">07 — Competition</div>
+  <div class="h1">The old way <span class="em">vs. the network.</span></div>
+  <div class="cmp">
+    <div class="side lose">
+      <h3>The old Empire</h3>
+      <div class="it"><span class="m">✗</span><span class="x">Reports vanish into ledgers</span></div>
+      <div class="it"><span class="m">✗</span><span class="x">Six hunters, six separate hunts</span></div>
+      <div class="it"><span class="m">✗</span><span class="x">Recruitment lanes wide open</span></div>
+      <div class="it"><span class="m">✗</span><span class="x">Sightings never become strikes</span></div>
     </div>
-    <div class="kicker" style="text-align:center;margin-top:13pt;font-size:8pt;color:#5e5e6e">THE EMPIRE DOES NOT COMPETE WITH BETTER LEGIONS — IT COMPETES WITH BETTER COORDINATION</div>
-    ${footer("Competition", 8)}
+    <div class="side win">
+      <h3>OBSIDIAN</h3>
+      <div class="it"><span class="m" style="color:var(--red)">✓</span><span class="x">One live galactic grid</span></div>
+      <div class="it"><span class="m" style="color:var(--red)">✓</span><span class="x">One encrypted channel, one doctrine</span></div>
+      <div class="it"><span class="m" style="color:var(--red)">✓</span><span class="x">Counter-recruitment broadcasts</span></div>
+      <div class="it"><span class="m" style="color:var(--red)">✓</span><span class="x">Intel escalates into hunts</span></div>
+    </div>
   </div>
-</div>`);
+  <div class="mono" style="font-size:8pt;letter-spacing:.14em;color:var(--muted);text-align:center;margin-top:12pt">THE EMPIRE DOES NOT COMPETE WITH BETTER LEGIONS — IT COMPETES WITH BETTER COORDINATION</div>
+  ${footer("Competition", 8)}
+</div></div>`);
 
-/* 09 — 3D */
+/* 09 — 3D (dark plate) */
 slides.push(`
-<div class="slide">
+<div class="slide dark">
+  <div class="bgimg" style="background-image:${bg("warship.png")}"></div>
+  <div class="veil"></div>
   <div class="pad">
-    ${header("Craft · Visual Identity", "3D — a raytracer", "we wrote ourselves.")}
-    <p style="font-size:10pt;margin-bottom:13pt">Eight scenes, one vectorized numpy raytracer built from scratch — no external 3D software, no stock renders.</p>
+    <div class="kick">08 — Craft · 3D</div>
+    <div class="h1">A raytracer we <span class="em" style="color:#B00E27">wrote ourselves.</span></div>
+    <div class="lede">Eight scenes from a vectorized numpy renderer built from scratch — no external 3D software, no stock renders.</div>
     <div class="rgrid">
-      ${[["sigil.png", "The Sigil"], ["warship.png", "Warship"], ["helmet.png", "Helmet"], ["planet.png", "Planet"], ["probe.png", "Probe"], ["throne.png", "Throne"], ["blade.png", "Blade"], ["citadel.png", "Citadel"]].map(([f, c]) => `
+      ${[["sigil.png", "Sigil"], ["warship.png", "Warship"], ["helmet.png", "Helmet"], ["planet.png", "Planet"], ["probe.png", "Probe"], ["throne.png", "Throne"], ["blade.png", "Blade"], ["citadel.png", "Citadel"]].map(([f, c]) => `
         <div class="rcell"><img src="data:image/png;base64,${b64(f)}"/><div class="cap">${c}</div></div>`).join("")}
     </div>
-    ${footer("Craft · 3D", 9)}
+    ${footer("Craft · 3D", 9, true)}
   </div>
 </div>`);
 
-/* 10 — BRAND */
+/* 10 — BRAND (light) */
 slides.push(`
-<div class="slide">
-  <div class="pad">
-    ${header("Craft · Iron Protocol", "One design", "system.")}
-    <div class="sws">
-      ${[["#050507", "BASE"], ["#0b0b12", "PANEL"], ["#1e1e2e", "HAIRLINE"], ["#e8e4d8", "BONE"], ["#8a8a94", "STEEL"], ["#e01e37", "ACTION"], ["#ff2a44", "ALERT"], ["#7a0e1e", "DEEP"], ["#f4a300", "WARN"], ["#3ddc84", "POS"]].map(([c, l]) => `<div class="sw" style="background:${c}">${c}<small>${l}</small></div>`).join("")}
-    </div>
-    <div class="row" style="margin-top:16pt;gap:20pt;align-items:flex-end">
-      <div style="flex:1">
-        <div class="kicker" style="font-size:8pt">Typography</div>
-        <div style="font-family:'Cinzel',serif;font-weight:900;font-size:26pt;letter-spacing:.06em;margin-top:6pt">ORDER IS PEACE</div>
-        <div style="font-size:8.5pt;color:#9494a2;margin-top:6pt">SIGHTING LOG // SECTOR 9 // 02:41:07 · AUTHENTICATE · DISPATCH · HUNT</div>
-      </div>
-      <div style="flex:1">
-        <div class="kicker" style="font-size:8pt">Motion &amp; Tone</div>
-        <div style="font-size:8.5pt;color:#9494a2;line-height:1.8;margin-top:6pt">Scramble titles · magnetic buttons · count-ups · radar sweep · WebAudio UI sounds · absolute, institutional, merciless</div>
-      </div>
-    </div>
-    ${footer("Craft · Brand", 10)}
+<div class="slide"><div class="pad">
+  ${wm}
+  <div class="kick">09 — Craft · Brand</div>
+  <div class="h1">Iron <span class="em">Protocol.</span></div>
+  <div class="sws">
+    ${[["#F5F2EA", "PAPER", "ink text"], ["#1A1611", "INK", "type"], ["#B00E27", "IMPERIAL", "one accent"], ["#8A8274", "MUTED", "secondary"], ["#EFEBE0", "PAPER HI", "surfaces"]].map(([c, l, s]) => `<div class="sw" style="background:${c};color:${c === "#F5F2EA" || c === "#EFEBE0" ? "#1A1611" : "#F5F2EA"}">${c}<small>${l} · ${s}</small></div>`).join("")}
   </div>
-</div>`);
+  <div class="tspec">
+    <div>
+      <div class="lab">Display — Playfair Display</div>
+      <div class="sample1">Order <em>is</em> peace.</div>
+    </div>
+    <div>
+      <div class="lab">UI — Inter</div>
+      <div class="sample2">Authenticate · Dispatch · Hunt</div>
+    </div>
+    <div>
+      <div class="lab">Data — Plex Mono</div>
+      <div class="sample3">SIGHTING LOG // SECTOR 9 // 02:41:07</div>
+    </div>
+  </div>
+  <div class="tspec" style="margin-top:12pt;border-top:1px solid var(--hair);padding-top:10pt">
+    <div>
+      <div class="lab">Motion</div>
+      <div class="sample2" style="font-size:10.5pt;color:var(--ink2);line-height:1.6">Scramble-decode titles · count-up telemetry · radar sweep · WebAudio interface sounds — motion with meaning, never decoration.</div>
+    </div>
+    <div>
+      <div class="lab">Voice</div>
+      <div class="sample2" style="font-size:10.5pt;color:var(--ink2);line-height:1.6">Absolute, institutional, merciless. Data before adjectives. The Empire does not explain — it commands.</div>
+    </div>
+  </div>
+  ${footer("Craft · Brand", 10)}
+</div></div>`);
 
 /* 11 — TEAM */
 slides.push(`
-<div class="slide">
-  <div class="pad">
-    ${header("The Team", "Three operatives.", "One doctrine.")}
-    <div class="team">
-      <div class="member"><div class="bar"></div><div class="ava">AP</div><div class="nm">Anuj Phulera</div><div class="rl">Developer · AI · Backend</div><div class="bio">Builds the engine — zero-latency systems, the AI that makes the hunt computable.</div></div>
-      <div class="member"><div class="bar"></div><div class="ava">AC</div><div class="nm">Aarav Choudhary</div><div class="rl">Vision · Marketing · Ideas</div><div class="bio">Saw the decay of the old order and imagined something absolute. Engineers the narrative.</div></div>
-      <div class="member"><div class="bar"></div><div class="ava">JK</div><div class="nm">Jeehaan Kwatra</div><div class="rl">Design · Media · Pitch</div><div class="bio">Forges the aesthetic — every pixel, every frame, every blade of the sigil.</div></div>
-    </div>
-    <div class="kicker" style="text-align:center;margin-top:13pt;font-size:8pt;color:#5e5e6e">IDEATION · ENGINEERING · DESIGN · FILM · PITCH — ALL IN-HOUSE</div>
-    ${footer("Team", 11)}
+<div class="slide"><div class="pad">
+  ${wm}
+  <div class="kick">10 — The Team</div>
+  <div class="h1">Three operatives. <span class="em">One doctrine.</span></div>
+  <div class="team">
+    <div class="tm"><div class="ini">OPERATIVE 001</div><div class="nm">Anuj Phulera</div><div class="rl">Developer · AI · Backend</div><div class="bio">Builds the engine — zero-latency systems, the AI that makes the hunt computable.</div></div>
+    <div class="tm"><div class="ini">OPERATIVE 002</div><div class="nm">Aarav Choudhary</div><div class="rl">Vision · Marketing · Ideas</div><div class="bio">Saw the decay of the old order and imagined something absolute. Engineers the narrative.</div></div>
+    <div class="tm"><div class="ini">OPERATIVE 003</div><div class="nm">Jeehaan Kwatra</div><div class="rl">Design · Media · Pitch</div><div class="bio">Forges the aesthetic — every pixel, every frame, every blade of the sigil.</div></div>
   </div>
-</div>`);
+  <div class="mono" style="font-size:8pt;letter-spacing:.18em;color:var(--muted);text-align:center;margin-top:12pt">IDEATION · ENGINEERING · DESIGN · FILM · PITCH — ALL IN-HOUSE</div>
+  ${footer("The Team", 11)}
+</div></div>`);
 
 /* 12 — ROADMAP */
 slides.push(`
-<div class="slide">
-  <div class="pad">
-    ${header("The Road Ahead", "The net", "expands.")}
-    <div class="road">
-      ${[["02", "Probe Mesh", "fleet-wide probe telemetry with live alerts"], ["03", "Voice Command", "talk to the mainframe — the terminal listens"], ["04", "Sector Simulation", "AI-generated Jedi behavior patterns for training"], ["05", "Citizen Network", "anonymous tip portal feeding the intelligence grid"]].map(([n, t, d]) => `
-        <div class="step2"><div class="n">${n}</div><div class="tx"><b>${t}</b><s>${d}</s></div></div>`).join("")}
-    </div>
-    ${footer("Roadmap", 12)}
+<div class="slide"><div class="pad">
+  ${wm}
+  <div class="kick">11 — The Road Ahead</div>
+  <div class="h1">The net <span class="em">expands.</span></div>
+  <div class="road">
+    <div class="r2"><div class="n">02</div><div class="tx"><b>Probe Mesh</b><s>Fleet-wide probe telemetry with live alerts</s></div></div>
+    <div class="r2"><div class="n">03</div><div class="tx"><b>Voice Command</b><s>Talk to the mainframe — the terminal listens</s></div></div>
+    <div class="r2"><div class="n">04</div><div class="tx"><b>Sector Simulation</b><s>AI-generated Jedi behavior patterns for training</s></div></div>
+    <div class="r2"><div class="n">05</div><div class="tx"><b>Citizen Network</b><s>Anonymous tip portal feeding the intelligence grid</s></div></div>
   </div>
-</div>`);
+  ${footer("The Road Ahead", 12)}
+</div></div>`);
 
-/* 13 — CLOSE */
+/* 13 — CLOSE (dark plate) */
 slides.push(`
-<div class="slide">
+<div class="slide dark">
   <div class="bgimg" style="background-image:${bg("throne.png")}"></div>
   <div class="veil"></div>
-  <div class="center">
-    ${SIGIL_SM}
-    <div class="cover-title" style="font-size:40pt">THE HUNT NEVER ENDS</div>
-    <div class="cover-sub" style="font-size:10pt;letter-spacing:.34em;text-indent:.34em">Until the last ember is cold</div>
-    <div class="cover-line"></div>
-    <div class="cover-meta">OBSIDIAN · Imperial Security Network<br/>Anuj Phulera · Aarav Choudhary · Jeehaan Kwatra<br/>TS '26 Creative Prelims</div>
-    <div class="chip red" style="margin-top:14pt;font-size:8pt">PASSPHRASE: FOR THE EMPIRE — TRY THE DEMO</div>
+  <div class="pad" style="justify-content:center;align-items:center;text-align:center">
+    <div style="max-width:10in">
+      <div class="kick" style="text-align:center">TS '26 · Creative Prelims</div>
+      <div class="h1" style="font-size:52pt">The hunt never <span class="em" style="color:#B00E27">ends.</span></div>
+      <div style="font-family:'Playfair',serif;font-style:italic;font-size:15pt;color:#C9C2B4;margin-top:14pt">Until the last ember is cold.</div>
+      <div style="width:2.2in;height:2pt;background:var(--red);margin:22pt auto"></div>
+      <div class="mono" style="font-size:9pt;letter-spacing:.26em;color:#A9A294;text-transform:uppercase;line-height:2.2">OBSIDIAN · Imperial Security Network<br/>Anuj Phulera · Aarav Choudhary · Jeehaan Kwatra</div>
+      <div style="border:1.5pt solid var(--red);color:var(--cream);display:inline-block;margin-top:20pt;padding:8pt 18pt;font-family:'PlexMono',monospace;font-size:9pt;letter-spacing:.22em">PASSPHRASE: FOR THE EMPIRE — TRY THE DEMO</div>
+    </div>
+    ${footer("Close", 13, true)}
   </div>
 </div>`);
 
 const html = `<!DOCTYPE html><html><head><meta charset="UTF-8"><style>${CSS}</style></head><body>${slides.join("")}</body></html>`;
-
 fs.writeFileSync(path.join(OUT, "deck.html"), html);
-console.log("deck.html written:", (html.length / 1024).toFixed(0), "KB ·", slides.length, "slides");
+console.log("deck.html:", (html.length / 1024).toFixed(0), "KB ·", slides.length, "slides");
